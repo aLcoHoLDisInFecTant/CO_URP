@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: f6d68f031677ac640bb0a40f8d6632d5
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 302294
+  packageName: Star/Reward Effect
+  packageVersion: 1.0
+  assetPath: Assets/Star Effect/Script/EnableObjectsWithDelay.cs
+  uploadId: 709791

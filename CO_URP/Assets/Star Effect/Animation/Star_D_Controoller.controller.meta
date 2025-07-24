@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 7525d0ac601466a4dacd76b1e43bebb3
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 9100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 302294
+  packageName: Star/Reward Effect
+  packageVersion: 1.0
+  assetPath: Assets/Star Effect/Animation/Star_D_Controoller.controller
+  uploadId: 709791
