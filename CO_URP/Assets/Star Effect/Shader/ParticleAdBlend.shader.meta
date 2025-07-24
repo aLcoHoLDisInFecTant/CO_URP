@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: f99788ff6c92e464681c45cd4a4ed682
+ShaderImporter:
+  externalObjects: {}
+  defaultTextures: []
+  nonModifiableTextures: []
+  preprocessorOverride: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 302294
+  packageName: Star/Reward Effect
+  packageVersion: 1.0
+  assetPath: Assets/Star Effect/Shader/ParticleAdBlend.shader
+  uploadId: 709791

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: b388dc63f4683be48a53e4717f5e0bac
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 7400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 302294
+  packageName: Star/Reward Effect
+  packageVersion: 1.0
+  assetPath: Assets/Star Effect/Animation/Star_End.anim
+  uploadId: 709791
