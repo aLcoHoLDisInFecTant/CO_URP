@@ -98,7 +98,7 @@ public class RegularCollection : MonoBehaviour, ICollection
 
     public void OnCollected(GameObject collector)
     {
-        ScoreManager.Instance?.AddPickupScore(collectionScore);
+        ScoreManager.Instance?.AddScoredPoints(collectionScore);
         // 可扩展：动画/音效/任务系统
     }
 
