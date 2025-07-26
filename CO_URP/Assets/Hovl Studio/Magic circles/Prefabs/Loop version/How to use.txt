@@ -1,2 +1,3 @@
-Magic circle from this folder play endlessly.
-If you need to use them for a certain time, uncheck the "loop" checkbox and play them from the script every second.
+version https://git-lfs.github.com/spec/v1
+oid sha256:405579e7647e1e983a36b83b3897ae21309976f877809aaa3a21daa0bca67b49
+size 162

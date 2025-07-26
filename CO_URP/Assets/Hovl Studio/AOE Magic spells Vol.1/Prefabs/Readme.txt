@@ -1,7 +1,3 @@
-I recomend you to use post effect "bloom".
-Video and screenshots of the effects were made using post effect "bloom".
-Bloom from Package manager makes all scene unsaturated and faded: https://youtu.be/Ee8G4keWAlQ
-so I recomend to use another free package: https://assetstore.unity.com/?q=Bloom&orderBy=0
-I like this one: https://assetstore.unity.com/packages/vfx/shaders/fullscreen-camera-effects/fastmobilebloom-79310
-
-SUPPORT ASSET FOR URP(LWRP) or HDRP here --> https://assetstore.unity.com/packages/slug/157764
+version https://git-lfs.github.com/spec/v1
+oid sha256:8cc5723e7940eab3c6d5e24200e624ce5dcd32b914a45119e8ee9dbbc54fbf2a
+size 519

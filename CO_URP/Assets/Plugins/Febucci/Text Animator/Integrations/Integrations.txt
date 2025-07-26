@@ -1,12 +1,3 @@
-Hi there!
-Text Animator is already integrated with:
-
--"Dialogue System for Unity"
--"Yarn Spinner"
--The packages you find in this folder, like "PlayMaker".
-& More!
-
-Please read the documentation to discover all supported assets, how to integrate them etc.
--In case the plugin that you're using is not already supported, you can read how to support it in the documentation.
-
-Have a lovely day!
+version https://git-lfs.github.com/spec/v1
+oid sha256:5e418bf62bc1f97039e6029df234fefc1b26f24afa44caa9c3b48f09776a95a5
+size 391
