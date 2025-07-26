@@ -1,24 +1,36 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class ScoreManager : MonoBehaviour
 {
     public static ScoreManager Instance { get; private set; }
 
-    public float totalScore { get; private set; }
+    public float TotalScore { get; private set; } = 0f;
+    public float FrequencyMultiplier => Mathf.Clamp01(multiplierTracker.Frequency);
+    public float DurationMultiplier => Mathf.Clamp01(multiplierTracker.Duration);
+    public int CombinedMultiplier => Mathf.RoundToInt(multiplierTracker.TotalMultiplier);
 
-    [SerializeField] private ScoreCalculator calculator;
-    [SerializeField] private TaskSystem taskSystem;
+    [SerializeField] private Player_Explore player;
+    private ScoreMultiplierTracker multiplierTracker;
 
-    void Awake() => Instance = this;
-
-    void Update()
+    private void Awake()
     {
-        float actionScore = calculator.CalculateActionScore();
-        float taskScore = taskSystem.CheckAndGetTaskScore();
-        totalScore += actionScore + taskScore;
+        Instance = this;
+        multiplierTracker = new ScoreMultiplierTracker();
     }
 
-    public void AddPickupScore(float amount) => totalScore += amount;
+    private void Update()
+    {
+        if (player == null) return;
+
+        multiplierTracker.UpdateMultiplier(player.inputQueue);
+        Debug.Log("Multiplier" + CombinedMultiplier);
+    }
+
+    // 对外统一接口
+    public void AddScoredPoints(float baseScore)
+    {
+        float earnedScore = baseScore * CombinedMultiplier;
+        TotalScore += earnedScore;
+        Debug.Log($"Add Score: Base = {baseScore}, Multiplier = {CombinedMultiplier}, Total = {TotalScore}");
+    }
 }

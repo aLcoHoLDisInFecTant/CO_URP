@@ -29,7 +29,6 @@ public class Player_Explore : MonoBehaviour, IControllable, IResettable, IComman
     private bool isControllable = true;
 
     public PlayerData_Explore Data => playerData;
-
     //  ‰»Î∂”¡–
     public Queue<ECommand> inputQueue = new Queue<ECommand>();
 

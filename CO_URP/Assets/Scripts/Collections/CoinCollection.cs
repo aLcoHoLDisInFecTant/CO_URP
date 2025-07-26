@@ -14,7 +14,8 @@ public class CoinCollection : MonoBehaviour, ICollection
 
     public void OnCollected(GameObject collector)
     {
-        //ScoreManager.Instance.AddPickupScore(coinScore);
+        ScoreHUDBridge.Instance?.AddCoin(); // 增加金币计数
+        ScoreManager.Instance?.AddScoredPoints(coinScore);
         // 可扩展：播放音效、动画
     }
 
