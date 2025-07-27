@@ -4,10 +4,10 @@ public class ScoreManager : MonoBehaviour
 {
     public static ScoreManager Instance { get; private set; }
 
-    public float TotalScore { get; private set; } = 0f;
+    public int TotalScore { get; private set; } = 0;
     public float FrequencyMultiplier => Mathf.Clamp01(multiplierTracker.Frequency);
     public float DurationMultiplier => Mathf.Clamp01(multiplierTracker.Duration);
-    public int CombinedMultiplier => Mathf.RoundToInt(multiplierTracker.TotalMultiplier);
+    public float CombinedMultiplier => multiplierTracker.TotalMultiplier;
 
     [SerializeField] private Player_Explore player;
     private ScoreMultiplierTracker multiplierTracker;
@@ -29,7 +29,7 @@ public class ScoreManager : MonoBehaviour
     // 对外统一接口
     public void AddScoredPoints(float baseScore)
     {
-        float earnedScore = baseScore * CombinedMultiplier;
+        int earnedScore = Mathf.RoundToInt(baseScore * CombinedMultiplier);
         TotalScore += earnedScore;
         Debug.Log($"Add Score: Base = {baseScore}, Multiplier = {CombinedMultiplier}, Total = {TotalScore}");
     }

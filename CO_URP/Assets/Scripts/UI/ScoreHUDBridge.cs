@@ -11,12 +11,12 @@ public class ScoreHUDBridge : MonoBehaviour
         Instance = this;
     }
 
-    public float GetTotalScore()
+    public int GetTotalScore()
     {
-        return ScoreManager.Instance?.TotalScore ?? 0f;
+        return ScoreManager.Instance?.TotalScore ?? 0;
     }
 
-    public int GetCombinedMultiplier()
+    public float GetCombinedMultiplier()
     {
         return ScoreManager.Instance?.CombinedMultiplier ?? 1;
     }
