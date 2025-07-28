@@ -12,7 +12,4 @@ public class RehabStep
 
     [Tooltip("单次动作的建议持续时间（秒）")]
     public float durationPerRepetition = 2.0f;
-
-    [Tooltip("完成此组动作后需要休息的时间（秒）")]
-    public float restAfterStep = 30.0f;
 }

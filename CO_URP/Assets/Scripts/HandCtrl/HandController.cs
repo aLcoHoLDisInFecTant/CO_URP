@@ -40,9 +40,9 @@ public class HandController : MonoBehaviour
             zAngle = (last == ECommand.UP) ? 30f : -30f;
         }
         else if (activeInputs.Contains(ECommand.UP))
-            zAngle = 30f;
-        else if (activeInputs.Contains(ECommand.DOWN))
             zAngle = -30f;
+        else if (activeInputs.Contains(ECommand.DOWN))
+            zAngle = 30f;
 
         hand.localRotation = Quaternion.Euler(xAngle, 0f, zAngle);
 
