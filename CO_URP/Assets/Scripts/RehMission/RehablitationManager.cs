@@ -1,121 +1,180 @@
-// RehabilitationManager.cs
-using UnityEngine;
-using UnityEngine.UI; // ÒıÈëUIÃüÃû¿Õ¼ä
+ï»¿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
+using System.Collections.Generic;
+using Michsky.MUIP;
 
 public class RehabilitationManager : MonoBehaviour
 {
-    [Header("¿µ¸´¼Æ»®")]
-    [Tooltip("ÍÏÈëÒªÖ´ĞĞµÄ¿µ¸´¼Æ»® Scriptable Object ×Ê²ú")]
+    [Header("åº·å¤è®¡åˆ’")]
     public RehabilitationPlan currentPlan;
 
-    [Header("UI ÒıÓÃ")]
-    [Tooltip("ÓÃÓÚÏÔÊ¾µ±Ç°×´Ì¬µÄÎÄ±¾£¬ÀıÈç£ºÕıÔÚ½øĞĞÇüÇú")]
-    public Text statusText;
-    [Tooltip("ÓÃÓÚÏÔÊ¾µ±Ç°¶¯×÷¼ÆÊı»òµ¹¼ÆÊ±µÄÎÄ±¾")]
-    public Text progressText;
-    [Tooltip("ÓÃÓÚÏÔÊ¾ÕûÌå½ø¶ÈµÄÎÄ±¾")]
-    public Text overallProgressText;
+    [Header("UI å¼•ç”¨")]
+    public ListView listView;
 
-    // ÄÚ²¿×´Ì¬±äÁ¿
+    [Header("è®¾å¤‡è¾“å…¥æ¡¥")]
+    public EncoderInputBridgeV2 inputBridge;
+
     private int currentStepIndex = 0;
     private int currentRepetition = 0;
-    private Coroutine currentRoutine = null;
+    private Coroutine detectionRoutine = null;
 
-    // ¹«¹²·½·¨£¬ÓÃÓÚ´ÓÍâ²¿£¨ÀıÈçUI°´Å¥£©Æô¶¯¿µ¸´¼Æ»®
+    private List<ListView.ListItem> taskItems = new List<ListView.ListItem>();
+    private bool actionInProgress = false;
+
+    void Start()
+    {
+        if (currentPlan != null)
+            PopulateTaskList();
+    }
+
     public void StartRehabilitation()
     {
         if (currentPlan == null || currentPlan.steps.Count == 0)
         {
-            Debug.LogError("¿µ¸´¼Æ»®Î´ÉèÖÃ»òÎª¿Õ£¡");
-            statusText.text = "´íÎó£º¼Æ»®Îª¿Õ";
+            Debug.LogError("åº·å¤è®¡åˆ’æœªè®¾ç½®æˆ–ä¸ºç©ºï¼");
             return;
         }
 
-        // Í£Ö¹¿ÉÄÜÕıÔÚÔËĞĞµÄ¾ÉÀı³Ì
-        if (currentRoutine != null)
+        if (detectionRoutine != null)
+            StopCoroutine(detectionRoutine);
+
+        currentStepIndex = 0;
+        currentRepetition = 0;
+        ResetTaskProgressUI();
+        if (inputBridge != null)
         {
-            StopCoroutine(currentRoutine);
+            detectionRoutine = StartCoroutine(DetectAndAdvance());
+        }
+        else
+        {
+            Debug.LogWarning("æœªæ£€æµ‹åˆ° EncoderInputBridgeï¼Œä»…æ˜¾ç¤ºä»»åŠ¡åˆ—è¡¨ï¼Œæœªå¯ç”¨åŠ¨ä½œæ£€æµ‹ã€‚");
         }
 
-        // Æô¶¯ĞÂµÄ¿µ¸´Á÷³Ì
-        currentStepIndex = 0;
-        currentRoutine = StartCoroutine(ExecutePlan());
     }
 
-    private IEnumerator ExecutePlan()
+    private IEnumerator DetectAndAdvance()
     {
-        // ±éÀú¼Æ»®ÖĞµÄÃ¿Ò»²½
         while (currentStepIndex < currentPlan.steps.Count)
         {
-            RehabStep currentStep = currentPlan.steps[currentStepIndex];
-            currentRepetition = 1;
+            var step = currentPlan.steps[currentStepIndex];
+            UpdateListItemStatus(currentStepIndex, $"è¿›è¡Œä¸­ ({currentRepetition + 1}/{step.repetitions})");
 
-            // ¸üĞÂÕûÌå½ø¶ÈUI
-            UpdateOverallProgressUI();
-
-            // Ö´ĞĞµ±Ç°²½ÖèµÄËùÓĞÖØ¸´´ÎÊı
-            while (currentRepetition <= currentStep.repetitions)
+            if (DetectAction(step.actionType))
             {
-                // 1. Ö´ĞĞ¶¯×÷½×¶Î
-                statusText.text = $"ÕıÔÚ½øĞĞ: {GetActionName(currentStep.actionType)}";
-                progressText.text = $"µÚ {currentRepetition} / {currentStep.repetitions} ´Î";
-
-                // µÈ´ıµ¥´Î¶¯×÷µÄ³ÖĞøÊ±¼ä
-                yield return new WaitForSeconds(currentStep.durationPerRepetition);
-
-                currentRepetition++;
-            }
-
-            // 2. ĞİÏ¢½×¶Î
-            // Èç¹û²»ÊÇ×îºóÒ»¸ö²½Öè£¬Ôò½øÈëĞİÏ¢
-            if (currentStepIndex < currentPlan.steps.Count - 1)
-            {
-                float restTimer = currentStep.restAfterStep;
-                statusText.text = "ÇëĞİÏ¢";
-                while (restTimer > 0)
+                if (!actionInProgress)
                 {
-                    progressText.text = $"×é¼äĞİÏ¢: {Mathf.CeilToInt(restTimer)} Ãë";
-                    yield return new WaitForSeconds(1.0f);
-                    restTimer -= 1.0f;
+                    actionInProgress = true;
+                    currentRepetition++;
+
+                    if (currentRepetition >= step.repetitions)
+                    {
+                        UpdateListItemStatus(currentStepIndex, "âœ… å·²å®Œæˆ");
+                        currentStepIndex++;
+                        currentRepetition = 0;
+                    }
+
+                    yield return new WaitForSeconds(step.durationPerRepetition);
+                    actionInProgress = false;
                 }
             }
 
-            currentStepIndex++;
+            yield return null;
         }
 
-        // 3. Íê³É½×¶Î
         OnPlanComplete();
+    }
+
+    private bool DetectAction(RehabActionType action)
+    {
+        Vector3 relative = inputBridge.GetRelativeRotation();
+        float threshold = inputBridge.threshold;
+
+        switch (action)
+        {
+            case RehabActionType.Flexion:
+                return relative.x < -threshold;
+            case RehabActionType.Extension:
+                return relative.x > threshold;
+            case RehabActionType.Pronation:
+                return relative.y < -threshold;
+            case RehabActionType.Supination:
+                return relative.y > threshold;
+            case RehabActionType.UlnarDeviation:
+                return relative.z > threshold;
+            case RehabActionType.RadialDeviation:
+                return relative.z < -threshold;
+            default:
+                return false;
+        }
+    }
+
+    private void PopulateTaskList()
+    {
+        listView.listItems.Clear();
+
+        foreach (var step in currentPlan.steps)
+        {
+            var item = new ListView.ListItem();
+            item.row0 = new ListView.ListRow { rowText = GetActionName(step.actionType), iconScale = 0.8f };
+            item.row1 = new ListView.ListRow { rowText = $"ç›®æ ‡ï¼š{step.repetitions} æ¬¡" };
+            item.row2 = new ListView.ListRow { rowText = "çŠ¶æ€ï¼šæœªå¼€å§‹" };
+
+            listView.listItems.Add(item);
+        }
+
+        listView.rowCount = ListView.RowCount.Three;
+        listView.InitializeItems();
+    }
+
+
+    private void UpdateListItemStatus(int stepIndex, string statusText)
+    {
+        for (int i = 0; i < currentPlan.steps.Count; i++)
+        {
+            RehabStep step = currentPlan.steps[i];
+            var item = new ListView.ListItem();
+
+            item.row0 = new ListView.ListRow { rowText = GetActionName(step.actionType), iconScale = 0.8f };
+            item.row1 = new ListView.ListRow { rowText = $"ç›®æ ‡ï¼š{step.repetitions} æ¬¡" };
+
+            if (i < stepIndex)
+                item.row2 = new ListView.ListRow { rowText = "çŠ¶æ€ï¼šâœ… å·²å®Œæˆ" };
+            else if (i == stepIndex)
+                item.row2 = new ListView.ListRow { rowText = $"çŠ¶æ€ï¼š{statusText}" };
+            else
+                item.row2 = new ListView.ListRow { rowText = "çŠ¶æ€ï¼šæœªå¼€å§‹" };
+
+            listView.listItems[i] = item;
+        }
+
+        listView.InitializeItems();
+    }
+
+
+
+    private void ResetTaskProgressUI()
+    {
+        for (int i = 0; i < taskItems.Count; i++)
+            UpdateListItemStatus(i, "æœªå¼€å§‹");
     }
 
     private void OnPlanComplete()
     {
-        statusText.text = "ÈÎÎñÍê³É£¡";
-        progressText.text = "¹§Ï²£¡";
-        overallProgressText.text = $"ÕûÌå½ø¶È: {currentPlan.steps.Count}/{currentPlan.steps.Count}";
-        Debug.Log("¿µ¸´¼Æ»®ÒÑÍê³É£¡");
+        Debug.Log("åº·å¤è®¡åˆ’å·²å®Œæˆï¼");
     }
 
-    private void UpdateOverallProgressUI()
-    {
-        if (overallProgressText != null)
-        {
-            overallProgressText.text = $"ÕûÌå½ø¶È: {currentStepIndex + 1}/{currentPlan.steps.Count}";
-        }
-    }
-
-    // ¸¨Öú·½·¨£¬½«Ã¶¾Ù×ª»»ÎªÖĞÎÄ×Ö·û´®£¨ÓÃÓÚUIÏÔÊ¾£©
     private string GetActionName(RehabActionType actionType)
     {
-        switch (actionType)
+        return actionType switch
         {
-            case RehabActionType.Flexion: return "ÇüÇú";
-            case RehabActionType.Extension: return "ÉìÕ¹";
-            case RehabActionType.Supination: return "Ğıºó";
-            case RehabActionType.Pronation: return "ĞıÇ°";
-            case RehabActionType.UlnarDeviation: return "³ßÆ«";
-            case RehabActionType.RadialDeviation: return "èãÆ«";
-            default: return "Î´Öª¶¯×÷";
-        }
+            RehabActionType.Flexion => "å±ˆæ›²",
+            RehabActionType.Extension => "ä¼¸å±•",
+            RehabActionType.Supination => "æ—‹å",
+            RehabActionType.Pronation => "æ—‹å‰",
+            RehabActionType.UlnarDeviation => "å°ºå",
+            RehabActionType.RadialDeviation => "æ¡¡å",
+            _ => "æœªçŸ¥"
+        };
     }
 }

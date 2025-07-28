@@ -4,8 +4,8 @@ public class BoomerangLauncher : MonoBehaviour
 {
     [Header("Boomerang Settings")]
     public GameObject boomerangPrefab;
-    public float launchSpeed = 20f;
-    public float returnSpeed = 15f;
+    public float launchSpeed = 10f;
+    public float returnSpeed = 7.5f;
     public float maxDistance = 30f;
 
     [Header("Preview")]
