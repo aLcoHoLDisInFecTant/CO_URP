@@ -1,199 +1,137 @@
 using UnityEngine;
+using System.Linq;
 using System.Collections.Generic;
 
+/// <summary>
+/// 玩家的回旋镖蓄力与发射状态。
+/// 在此状态下，玩家保持原地，可以根据后续输入决定回旋镖的投掷方式。
+/// </summary>
 public class BoomerangChargeState : PlayerState_Explore
 {
-    private Vector3 aimDirection;
-    private bool isCharging = false;
     private BoomerangLauncher boomerangLauncher;
 
-    [Header("Aiming Parameters")]
-    private float maxRange = 30f;
-    private Vector3 currentTargetPosition;
+    // 标记回旋镖是否已在本状态内被投出
+    private bool isBoomerangThrown = false;
+
+    // 记录本次投掷的模式，用于在退出状态时决定是否需要命令回旋镖返回
+    private BoomerangMode currentMode = BoomerangMode.None;
+
+    // 定义回旋镖的投掷模式
+    private enum BoomerangMode
+    {
+        None,
+        Forward, // 前向投掷，需要手动命令返回
+        Circle   // 绕圈投掷，会自动返回
+    }
 
     public BoomerangChargeState(PlayerStateMachine_Explore sm) : base(sm)
     {
+        // 在构造时获取 BoomerangLauncher 的引用
         boomerangLauncher = stateMachine.player.GetComponent<BoomerangLauncher>();
     }
 
     public override void OnStateEnter()
     {
-        isCharging = true;
-        stateMachine.player.boomerangModel.gameObject.SetActive(true);
-        aimDirection = Vector3.forward; // Default direction
-        currentTargetPosition = transform.position + aimDirection * maxRange;
+        // --- 状态进入时的初始化 ---
+        isBoomerangThrown = false;
+        currentMode = BoomerangMode.None;
 
-        // Set animation if available
+        // 显示玩家身上的回旋镖模型，表示正在蓄力
+        stateMachine.player.boomerangModel.gameObject.SetActive(true);
+
+        // 触发蓄力动画
         if (stateMachine.player.Animator != null)
         {
             stateMachine.player.Animator.SetBool("BoomerangCharging", true);
         }
 
-        Debug.Log("Entered BoomerangChargeState - Ready to aim with WASD");
+        Debug.Log("进入回旋镖蓄力状态。按住 E/Q 并按 W/A/D 发射。");
     }
 
     public override void OnStateExit()
     {
-        isCharging = false;
+        // --- 状态退出时的清理 ---
+
+        // 如果是前向投掷模式，并且回旋镖仍在飞行中，则在松开按键时命令它返回
+        if (currentMode == BoomerangMode.Forward && stateMachine.player.isBoomerangFlying)
+        {
+            boomerangLauncher.RequestReturn();
+            Debug.Log("已命令前向投掷的回旋镖返回。");
+        }
+
+        // 隐藏玩家身上的回旋镖模型
         stateMachine.player.boomerangModel.gameObject.SetActive(false);
-        // Cancel preview when exiting state
-        if (stateMachine.PreviewController.IsPreviewing)
-        {
-            currentTargetPosition = stateMachine.PreviewController.EndPreview();
-        }
 
-        // Hide trajectory preview from boomerang launcher
-        if (boomerangLauncher != null)
-        {
-            boomerangLauncher.HideTrajectoryPreview();
-        }
-
-        // Reset animation if available
+        // 结束蓄力动画
         if (stateMachine.player.Animator != null)
         {
             stateMachine.player.Animator.SetBool("BoomerangCharging", false);
         }
 
-        Debug.Log("Exited BoomerangChargeState");
+        // 重置玩家脚本中的蓄力标记
+        stateMachine.player.isBoomerangCharging = false;
     }
 
     public override void Tick()
     {
-        // Check if still holding E or Q (SLIDERIGHT or SLIDELEFT)
-        bool stillCharging = stateMachine.inputQueue.Contains(ECommand.SLIDERIGHT) ||
-                           stateMachine.inputQueue.Contains(ECommand.SLIDELEFT);
+        // --- 每帧更新的逻辑 ---
 
-        if (!stillCharging)
+        // 检查是否仍在按住蓄力键 (E/Q)
+        bool stillCharging = stateMachine.inputQueue.Contains(ECommand.SLIDERIGHT) ||
+                             stateMachine.inputQueue.Contains(ECommand.SLIDELEFT);
+
+        // 如果松开了蓄力键，或者回旋镖已经飞出并返回（isBoomerangFlying变为false），则退出此状态
+        if (!stillCharging || (isBoomerangThrown && !stateMachine.player.isBoomerangFlying))
         {
-            // Released E/Q - Launch boomerang and return to preview state
-            LaunchBoomerang();
-            stateMachine.player.isBoomerangCharging = false;
             stateMachine.SetState(stateMachine.PreviewState);
             return;
         }
 
-        // Read WASD input for aiming
-        UpdateAimDirection();
-
-        // Use PreviewController similar to PreviewState for visual guidance
-        Vector2 moveDir = Vector2.zero;
-        foreach (var input in stateMachine.inputQueue)
+        // 如果回旋镖还未投出，则检测投掷指令
+        if (!isBoomerangThrown)
         {
-            switch (input)
+            // 检测前向投掷 (W键 / ECommand.UP)
+            if (stateMachine.inputQueue.Contains(ECommand.UP))
             {
-                case ECommand.LEFT:
-                    moveDir.x -= 1f;
-                    break;
-                case ECommand.RIGHT:
-                    moveDir.x += 1f;
-                    break;
-                case ECommand.UP:
-                    moveDir.y += 1f;
-                    break;
-                case ECommand.DOWN:
-                    moveDir.y -= 1f;
-                    break;
-            }
-        }
+                // 使用修改后的 Launcher 发射
+                boomerangLauncher.LaunchForward(stateMachine.player.transform.forward);
 
-        if (moveDir.sqrMagnitude > 0.01f)
-        {
-            moveDir.Normalize();
-            Vector3 direction = new Vector3(moveDir.x, 0, moveDir.y);
+                isBoomerangThrown = true;
+                currentMode = BoomerangMode.Forward;
+                ConsumeInputCommand(ECommand.UP); // 消耗指令，防止重复发射
+            }
+            // 检测向右绕圈投掷 (D键 / ECommand.RIGHT)
+            else if (stateMachine.inputQueue.Contains(ECommand.RIGHT))
+            {
+                // true 代表顺时针
+                boomerangLauncher.LaunchCircle(true);
 
-            if (!stateMachine.PreviewController.IsPreviewing)
-            {
-                stateMachine.PreviewController.StartPreview(direction);
+                isBoomerangThrown = true;
+                currentMode = BoomerangMode.Circle;
+                ConsumeInputCommand(ECommand.RIGHT);
             }
-            else
+            // 检测向左绕圈投掷 (A键 / ECommand.LEFT)
+            else if (stateMachine.inputQueue.Contains(ECommand.LEFT))
             {
-                stateMachine.PreviewController.UpdatePreview(direction);
+                // false 代表逆时针
+                boomerangLauncher.LaunchCircle(false);
+
+                isBoomerangThrown = true;
+                currentMode = BoomerangMode.Circle;
+                ConsumeInputCommand(ECommand.LEFT);
             }
-        }
-        else if (stateMachine.PreviewController.IsPreviewing)
-        {
-            // Keep preview active but don't end it while charging
-            // The preview shows where the boomerang will go
         }
     }
 
-    private void UpdateAimDirection()
+    /// <summary>
+    /// 从输入队列中移除一个指令，以防止其在下一帧被重复处理。
+    /// </summary>
+    /// <param name="command">要消耗的指令</param>
+    private void ConsumeInputCommand(ECommand command)
     {
-        Vector2 inputDir = Vector2.zero;
-
-        // Process input queue for WASD
-        foreach (var input in stateMachine.inputQueue)
-        {
-            switch (input)
-            {
-                case ECommand.LEFT:
-                    inputDir.x -= 1f;
-                    break;
-                case ECommand.RIGHT:
-                    inputDir.x += 1f;
-                    break;
-                case ECommand.UP:
-                    inputDir.y += 1f;
-                    break;
-                case ECommand.DOWN:
-                    inputDir.y -= 1f;
-                    break;
-            }
-        }
-
-        // Convert to 3D direction relative to camera
-        if (inputDir.sqrMagnitude > 0.01f)
-        {
-            Vector3 worldDirection = GetCameraRelativeDirection(new Vector3(inputDir.x, 0, inputDir.y));
-            aimDirection = worldDirection.normalized;
-        }
-
-        // Calculate target position
-        currentTargetPosition = transform.position + aimDirection * maxRange;
-
-        // Optional: Raycast to find actual target position if hitting something
-        RaycastHit hit;
-        if (Physics.Raycast(transform.position, aimDirection, out hit, maxRange))
-        {
-            currentTargetPosition = hit.point;
-        }
-    }
-
-    private Vector3 GetCameraRelativeDirection(Vector3 inputDir)
-    {
-        Transform cameraTransform = stateMachine.player.cameraTransform;
-        if (cameraTransform == null) return inputDir;
-
-        Vector3 camForward = cameraTransform.forward;
-        Vector3 camRight = cameraTransform.right;
-
-        camForward.y = 0;
-        camRight.y = 0;
-
-        camForward.Normalize();
-        camRight.Normalize();
-
-        Vector3 moveDir = inputDir.z * camForward + inputDir.x * camRight;
-        return moveDir.normalized;
-    }
-
-    private void LaunchBoomerang()
-    {
-        if (boomerangLauncher != null && !boomerangLauncher.IsBoomerangActive)
-        {
-            // Use the target position from preview controller if available
-            Vector3 targetPos = currentTargetPosition;
-            if (stateMachine.PreviewController.IsPreviewing)
-            {
-                targetPos = stateMachine.PreviewController.EndPreview();
-            }
-
-            boomerangLauncher.LaunchBoomerang(targetPos);
-            Debug.Log($"Boomerang launched towards: {targetPos}");
-        }
-        else
-        {
-            Debug.LogWarning("Cannot launch boomerang - launcher not available or boomerang already active");
-        }
+        // 使用 LINQ 创建一个不包含已消耗指令的新队列
+        var list = stateMachine.inputQueue.ToList();
+        list.Remove(command);
+        stateMachine.player.inputQueue = new Queue<ECommand>(list);
     }
 }
