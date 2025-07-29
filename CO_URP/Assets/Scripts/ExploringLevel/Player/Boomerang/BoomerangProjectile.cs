@@ -3,149 +3,256 @@ using System;
 
 public class BoomerangProjectile : MonoBehaviour
 {
-    private Vector3 startPosition;
-    private Vector3 targetPosition;
-    private Vector3 currentTargetPosition;
-    private float launchSpeed;
-    private float returnSpeed;
+    // Public enum to define the boomerang's behavior
+    public enum BoomerangMovementMode
+    {
+        None,
+        Forward, // Straight throw, waits at the end
+        Circle   // Circles a central point
+    }
+
+    // State variables
+    private BoomerangMovementMode movementMode = BoomerangMovementMode.None;
+    private bool isReturning = false;
+    private Transform playerTransform;
     private Action onReturnCallback;
 
-    private bool isReturning = false;
+    // Movement parameters
+    private float launchSpeed;
+    private float returnSpeed;
+
+    // Forward mode parameters
+    private Vector3 targetPosition;
     private bool hasReachedTarget = false;
-    private Transform playerTransform;
 
-    [Header("Visual")]
-    public Transform visualModel;  // 子对象用于自转
+    // Circle mode parameters
+    private Vector3 circleCenter;
+    private float circleRadius;
+    private float circleAngularSpeed;
+    private bool clockwise;
+    private float currentAngle = 0f;
+    private float totalAngleTraveled = 0f;
+    private const float FULL_CIRCLE_DEGREES = 360f;
 
-    [Header("Rotation")]
-    public float rotationSpeed = 720f; // degrees per second
-
-    [Header("Trail")]
-    public TrailRenderer trailRenderer;
+    [Header("Visuals")]
+    public Transform visualModel;
+    public float rotationSpeed = 720f; // Degrees per second for visual spin
 
     void Awake()
     {
-        // 如果子对象 visualModel 未设置，尝试自动查找
+        // Auto-assign visual model if not set
         if (visualModel == null && transform.childCount > 0)
         {
-            visualModel = transform.GetChild(0); // 默认第一个子对象为模型
-        }
-
-        // 添加 TrailRenderer（如未设定）
-        if (trailRenderer == null)
-        {
-            trailRenderer = gameObject.AddComponent<TrailRenderer>();
-            trailRenderer.time = 0.5f;
-            trailRenderer.startWidth = 0.2f;
-            trailRenderer.endWidth = 0.05f;
-            trailRenderer.material = new Material(Shader.Find("Sprites/Default"));
+            visualModel = transform.GetChild(0);
         }
     }
 
-    public void Initialize(Vector3 start, Vector3 target, float launchSpd, float returnSpd, Action returnCallback)
+    // --- INITIALIZATION METHODS ---
+
+    /// <summary>
+    /// Initializes the boomerang for a forward throw.
+    /// </summary>
+    public void InitializeForward(Vector3 start, Vector3 target, float launchSpd, float returnSpd, Action returnCallback)
     {
-        startPosition = start;
+        playerTransform = FindObjectOfType<Player_Explore>().transform;
+        transform.position = start;
+
+        movementMode = BoomerangMovementMode.Forward;
         targetPosition = target;
-        currentTargetPosition = target;
         launchSpeed = launchSpd;
         returnSpeed = returnSpd;
         onReturnCallback = returnCallback;
 
-        transform.position = start;
         isReturning = false;
         hasReachedTarget = false;
+    }
 
-        // 寻找玩家
-        Player_Explore player = FindObjectOfType<Player_Explore>();
-        if (player != null)
-        {
-            playerTransform = player.transform;
-        }
+    /// <summary>
+    /// Initializes the boomerang for a circular throw.
+    /// </summary>
+    public void InitializeCircle(Transform player, Vector3 center, float radius, float angularSpeed, bool isClockwise, Action returnCallback)
+    {
+        playerTransform = player;
+        transform.position = player.position + Vector3.up * 1.5f;
+
+        movementMode = BoomerangMovementMode.Circle;
+        circleCenter = center;
+        circleRadius = radius;
+        circleAngularSpeed = angularSpeed;
+        clockwise = isClockwise;
+        onReturnCallback = returnCallback;
+
+        Vector3 initialDirection = (transform.position - (center + new Vector3(0, 1.5f, 0))).normalized;
+        currentAngle = Mathf.Atan2(initialDirection.z, initialDirection.x) * Mathf.Rad2Deg;
+
+        isReturning = false;
+        totalAngleTraveled = 0f;
+
+        Debug.Log($"初始化圆圈投掷 - playerTransform: {(playerTransform != null ? "存在" : "null")}, 起始角度: {currentAngle}, 半径: {circleRadius}");
     }
 
     void Update()
     {
-        // 仅在飞行中执行模型自转
+        // Constant visual rotation regardless of mode
         if (visualModel != null)
         {
             visualModel.Rotate(Vector3.right, rotationSpeed * Time.deltaTime, Space.Self);
         }
 
-        if (!isReturning && !hasReachedTarget)
+        Debug.Log($"Update - isReturning: {isReturning}, movementMode: {movementMode}");
+
+        // State machine for movement
+        if (isReturning)
         {
-            MoveTowardsTarget();
-        }
-        else if (isReturning)
-        {
+            Debug.Log("正在执行返回逻辑");
             ReturnToPlayer();
-        }
-    }
-
-    private void MoveTowardsTarget()
-    {
-        Vector3 direction = (targetPosition - transform.position).normalized;
-        float distance = Vector3.Distance(transform.position, targetPosition);
-
-        if (distance < 0.5f)
-        {
-            hasReachedTarget = true;
-            isReturning = true;
             return;
         }
 
-        transform.position += direction * launchSpeed * Time.deltaTime;
-        ApplyRotation(direction);
+        switch (movementMode)
+        {
+            case BoomerangMovementMode.Forward:
+                UpdateForwardMovement();
+                break;
+            case BoomerangMovementMode.Circle:
+                UpdateCircleMovement();
+                break;
+            case BoomerangMovementMode.None:
+                Debug.Log("movementMode 为 None，回旋镖应该静止");
+                break;
+        }
+    }
+
+    // --- MOVEMENT LOGIC ---
+
+    private void UpdateForwardMovement()
+    {
+        if (hasReachedTarget)
+        {
+            // Reached destination, now just hover and wait for the return command.
+            // The visual rotation in Update() gives it a "hovering" effect.
+            return;
+        }
+
+        // Move towards the target position
+        transform.position = Vector3.MoveTowards(transform.position, targetPosition, launchSpeed * Time.deltaTime);
+
+        // Check if the target has been reached
+        if (Vector3.Distance(transform.position, targetPosition) < 0.1f)
+        {
+            hasReachedTarget = true;
+        }
+    }
+
+    private void UpdateCircleMovement()
+    {
+        // Calculate angle increment based on speed and direction
+        float angleIncrement = circleAngularSpeed * Time.deltaTime;
+        totalAngleTraveled += angleIncrement;
+
+        if (!clockwise)
+        {
+            currentAngle += angleIncrement;
+        }
+        else
+        {
+            currentAngle -= angleIncrement;
+        }
+
+        // Calculate new position in the circle
+        float radians = currentAngle * Mathf.Deg2Rad;
+        Vector3 offset = new Vector3(Mathf.Cos(radians), 0, Mathf.Sin(radians)) * circleRadius;
+        // Keep boomerang at player's height + offset
+        Vector3 newPosition = new Vector3(circleCenter.x, 0, circleCenter.z) + offset;
+        newPosition.y = playerTransform.position.y + 1.5f; // Follow player's Y position
+
+        transform.position = newPosition;
+
+        // After a full circle, automatically start returning
+        Debug.Log($"环绕进度: {totalAngleTraveled:F1}/{FULL_CIRCLE_DEGREES} 度");
+        if (totalAngleTraveled >= FULL_CIRCLE_DEGREES)
+        {
+            Debug.Log("环绕完成，开始返回");
+            StartReturn();
+        }
     }
 
     private void ReturnToPlayer()
     {
         if (playerTransform == null)
         {
-            ReturnComplete();
+            ReturnComplete(); // Failsafe if player is destroyed
             return;
         }
 
-        currentTargetPosition = playerTransform.position;
+        Vector3 returnTarget = playerTransform.position + Vector3.up * 1.5f; // Target player's chest
+        Vector3 oldPosition = transform.position;
+        transform.position = Vector3.MoveTowards(transform.position, returnTarget, returnSpeed * Time.deltaTime);
 
-        Vector3 direction = (currentTargetPosition - transform.position).normalized;
-        float distance = Vector3.Distance(transform.position, currentTargetPosition);
+        // 增加调试信息
+        float distanceToPlayer = Vector3.Distance(transform.position, returnTarget);
+        Debug.Log($"回旋镖返回中 - 距离玩家: {distanceToPlayer:F2}, 当前位置: {transform.position}, 目标位置: {returnTarget}");
 
-        if (distance < 0.8f)
+        // Check for arrival - 增大检测范围并添加多重检测条件
+        if (distanceToPlayer < 1.0f || Vector3.Distance(oldPosition, transform.position) < 0.01f)
         {
+            Debug.Log("完成返回 - 触发条件: " + (distanceToPlayer < 1.0f ? "距离达标" : "移动停止"));
             ReturnComplete();
-            return;
         }
-
-        transform.position += direction * returnSpeed * Time.deltaTime;
-        ApplyRotation(direction);
     }
 
-    private void ApplyRotation(Vector3 direction)
+    /// <summary>
+    /// Public method to trigger the return flight.
+    /// </summary>
+    public void StartReturn()
     {
-        if (direction != Vector3.zero)
+        Debug.Log($"StartReturn 被调用 - isReturning: {isReturning}, playerTransform: {(playerTransform != null ? "存在" : "null")}");
+
+        if (!isReturning)
         {
-            Quaternion facing = Quaternion.LookRotation(direction);
-            transform.rotation = facing;
+            isReturning = true;
+            movementMode = BoomerangMovementMode.None; // 阻止继续执行环绕逻辑
+            Debug.Log("回旋镖开始返回玩家 - 状态已设置");
+
+            // 立即测试一次返回逻辑
+            if (playerTransform != null)
+            {
+                Vector3 returnTarget = playerTransform.position + Vector3.up * 1.5f;
+                Debug.Log($"返回目标位置: {returnTarget}, 当前位置: {transform.position}, 距离: {Vector3.Distance(transform.position, returnTarget)}");
+            }
+            else
+            {
+                Debug.LogError("playerTransform 为 null！无法返回！");
+            }
+        }
+        else
+        {
+            Debug.Log("StartReturn 被调用，但已经在返回状态中");
         }
     }
 
     private void ReturnComplete()
     {
         onReturnCallback?.Invoke();
+        Destroy(gameObject); // Destroy self after callback
     }
 
+    /// <summary>
+    /// Handles collision with the environment.
+    /// </summary>
     void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("SurroundingCollectable"))
+        // Ignore player and triggers
+        if (other.CompareTag("Player") || other.isTrigger)
         {
-            Debug.Log($"Boomerang passed through collectable: {other.name}");
             return;
         }
 
-        if (!isReturning && !other.CompareTag("Player") && !other.isTrigger)
+        // If boomerang hits an obstacle during forward or circle phase, it starts returning
+        if (!isReturning)
         {
-            hasReachedTarget = true;
-            isReturning = true;
+            Debug.Log($"Boomerang hit obstacle: {other.name}, returning.");
+            StartReturn();
         }
     }
 }

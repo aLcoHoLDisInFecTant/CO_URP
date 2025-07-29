@@ -51,7 +51,6 @@ public class Player_Explore : MonoBehaviour, IControllable, IResettable, IComman
     public Transform child;
 
     [Header("Boomerang")]
-    public GameObject boomerangPrefab;
     public bool isBoomerangCharging = false;
     public bool isBoomerangFlying = false;
     public GameObject boomerangModel;
@@ -75,10 +74,12 @@ public class Player_Explore : MonoBehaviour, IControllable, IResettable, IComman
         }
 
         // Set boomerang prefab reference
+        /*
         if (boomerangPrefab != null)
         {
             boomerangLauncher.boomerangPrefab = boomerangPrefab;
         }
+        */
     }
 
     void Start()
