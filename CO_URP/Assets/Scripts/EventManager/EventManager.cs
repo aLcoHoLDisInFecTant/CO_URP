@@ -1,43 +1,32 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class EventManager : MonoBehaviour
 {
-    public static EventManager Instance;
+    private static Dictionary<string, Action<object>> eventDict = new();
 
-    private Dictionary<string, System.Action> eventTable = new Dictionary<string, System.Action>();
-
-    void Awake()
+    public static void StartListening(string eventName, Action<object> listener)
     {
-        if (Instance != null) { Destroy(gameObject); return; }
-        Instance = this;
-        DontDestroyOnLoad(gameObject);
-    }
-
-    public void RegisterEvent(string eventID, System.Action callback)
-    {
-        if (!eventTable.ContainsKey(eventID))
-            eventTable[eventID] = callback;
+        if (eventDict.ContainsKey(eventName))
+            eventDict[eventName] += listener;
         else
-            eventTable[eventID] += callback;
+            eventDict.Add(eventName, listener);
     }
 
-    public void UnregisterEvent(string eventID, System.Action callback)
+    public static void StopListening(string eventName, Action<object> listener)
     {
-        if (eventTable.ContainsKey(eventID))
-            eventTable[eventID] -= callback;
+        if (eventDict.ContainsKey(eventName))
+        {
+            eventDict[eventName] -= listener;
+            if (eventDict[eventName] == null)
+                eventDict.Remove(eventName);
+        }
     }
 
-    public void TriggerEvent(string eventID)
+    public static void TriggerEvent(string eventName, object param = null)
     {
-        if (eventTable.TryGetValue(eventID, out var callback))
-        {
-            callback?.Invoke();
-            Debug.Log($"[EventManager] 事件 {eventID} 已触发");
-        }
-        else
-        {
-            Debug.LogWarning($"[EventManager] 未找到事件：{eventID}");
-        }
+        if (eventDict.TryGetValue(eventName, out var callback))
+            callback?.Invoke(param);
     }
 }
