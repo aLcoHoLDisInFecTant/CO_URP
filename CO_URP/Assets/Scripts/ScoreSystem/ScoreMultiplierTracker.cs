@@ -51,8 +51,8 @@ public class ScoreMultiplierTracker
             timeSinceLastFrequencyIncrease = 0f;
             timeSinceLastNewAction = 0f;
 
-            if (EnableDebugLog)
-                Debug.Log($"[Multiplier] + Frequency: {freqIncrement} ¡ú {Frequency:F2}");
+            //if (EnableDebugLog)
+                //Debug.Log($"[Multiplier] + Frequency: {freqIncrement} ¡ú {Frequency:F2}");
         }
         else
         {
@@ -63,8 +63,8 @@ public class ScoreMultiplierTracker
                 float prev = Frequency;
                 Frequency = Mathf.Max(Frequency - decay, 0.5f);
 
-                if (EnableDebugLog && prev != Frequency)
-                    Debug.Log($"[Multiplier] - Frequency: {decay:F3} ¡ú {Frequency:F2}");
+                //if (EnableDebugLog && prev != Frequency)
+                    //Debug.Log($"[Multiplier] - Frequency: {decay:F3} ¡ú {Frequency:F2}");
             }
         }
 
@@ -80,8 +80,8 @@ public class ScoreMultiplierTracker
                 Duration = Mathf.Min(Duration + durIncrement, 2.0f);
                 durationTimer = 0f;
 
-                if (EnableDebugLog && prev != Duration)
-                    Debug.Log($"[Multiplier] + Duration: {durIncrement} ¡ú {Duration:F2}");
+                //if (EnableDebugLog && prev != Duration)
+                    //Debug.Log($"[Multiplier] + Duration: {durIncrement} ¡ú {Duration:F2}");
             }
         }
         else
@@ -95,8 +95,8 @@ public class ScoreMultiplierTracker
                 float prev = Duration;
                 Duration = Mathf.Max(Duration - decay, 0.5f);
 
-                if (EnableDebugLog && prev != Duration)
-                    Debug.Log($"[Multiplier] - Duration: {decay:F3} ¡ú {Duration:F2}");
+                //if (EnableDebugLog && prev != Duration)
+                    //Debug.Log($"[Multiplier] - Duration: {decay:F3} ¡ú {Duration:F2}");
             }
         }
 
@@ -104,7 +104,7 @@ public class ScoreMultiplierTracker
 
         if (EnableDebugLog)
         {
-            Debug.Log($"[Multiplier] Status: F={Frequency:F2}, D={Duration:F2}, Total={TotalMultiplier:F2}");
+            //Debug.Log($"[Multiplier] Status: F={Frequency:F2}, D={Duration:F2}, Total={TotalMultiplier:F2}");
         }
     }
 }

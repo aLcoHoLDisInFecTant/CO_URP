@@ -23,7 +23,7 @@ public class ScoreManager : MonoBehaviour
         if (player == null) return;
 
         multiplierTracker.UpdateMultiplier(player.inputQueue);
-        Debug.Log("Multiplier" + CombinedMultiplier);
+        //Debug.Log("Multiplier" + CombinedMultiplier);
     }
 
     // 对外统一接口

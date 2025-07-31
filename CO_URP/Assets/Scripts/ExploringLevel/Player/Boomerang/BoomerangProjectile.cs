@@ -88,7 +88,7 @@ public class BoomerangProjectile : MonoBehaviour
         isReturning = false;
         totalAngleTraveled = 0f;
 
-        Debug.Log($"初始化圆圈投掷 - playerTransform: {(playerTransform != null ? "存在" : "null")}, 起始角度: {currentAngle}, 半径: {circleRadius}");
+        //Debug.Log($"初始化圆圈投掷 - playerTransform: {(playerTransform != null ? "存在" : "null")}, 起始角度: {currentAngle}, 半径: {circleRadius}");
     }
 
     void Update()
@@ -99,12 +99,12 @@ public class BoomerangProjectile : MonoBehaviour
             visualModel.Rotate(Vector3.right, rotationSpeed * Time.deltaTime, Space.Self);
         }
 
-        Debug.Log($"Update - isReturning: {isReturning}, movementMode: {movementMode}");
+        //Debug.Log($"Update - isReturning: {isReturning}, movementMode: {movementMode}");
 
         // State machine for movement
         if (isReturning)
         {
-            Debug.Log("正在执行返回逻辑");
+            //Debug.Log("正在执行返回逻辑");
             ReturnToPlayer();
             return;
         }
@@ -118,7 +118,7 @@ public class BoomerangProjectile : MonoBehaviour
                 UpdateCircleMovement();
                 break;
             case BoomerangMovementMode.None:
-                Debug.Log("movementMode 为 None，回旋镖应该静止");
+                //Debug.Log("movementMode 为 None，回旋镖应该静止");
                 break;
         }
     }
@@ -169,10 +169,10 @@ public class BoomerangProjectile : MonoBehaviour
         transform.position = newPosition;
 
         // After a full circle, automatically start returning
-        Debug.Log($"环绕进度: {totalAngleTraveled:F1}/{FULL_CIRCLE_DEGREES} 度");
+        //Debug.Log($"环绕进度: {totalAngleTraveled:F1}/{FULL_CIRCLE_DEGREES} 度");
         if (totalAngleTraveled >= FULL_CIRCLE_DEGREES)
         {
-            Debug.Log("环绕完成，开始返回");
+            //Debug.Log("环绕完成，开始返回");
             StartReturn();
         }
     }
@@ -191,12 +191,12 @@ public class BoomerangProjectile : MonoBehaviour
 
         // 增加调试信息
         float distanceToPlayer = Vector3.Distance(transform.position, returnTarget);
-        Debug.Log($"回旋镖返回中 - 距离玩家: {distanceToPlayer:F2}, 当前位置: {transform.position}, 目标位置: {returnTarget}");
+        //Debug.Log($"回旋镖返回中 - 距离玩家: {distanceToPlayer:F2}, 当前位置: {transform.position}, 目标位置: {returnTarget}");
 
         // Check for arrival - 增大检测范围并添加多重检测条件
         if (distanceToPlayer < 1.0f || Vector3.Distance(oldPosition, transform.position) < 0.01f)
         {
-            Debug.Log("完成返回 - 触发条件: " + (distanceToPlayer < 1.0f ? "距离达标" : "移动停止"));
+            //Debug.Log("完成返回 - 触发条件: " + (distanceToPlayer < 1.0f ? "距离达标" : "移动停止"));
             ReturnComplete();
         }
     }
@@ -206,28 +206,28 @@ public class BoomerangProjectile : MonoBehaviour
     /// </summary>
     public void StartReturn()
     {
-        Debug.Log($"StartReturn 被调用 - isReturning: {isReturning}, playerTransform: {(playerTransform != null ? "存在" : "null")}");
+        //Debug.Log($"StartReturn 被调用 - isReturning: {isReturning}, playerTransform: {(playerTransform != null ? "存在" : "null")}");
 
         if (!isReturning)
         {
             isReturning = true;
             movementMode = BoomerangMovementMode.None; // 阻止继续执行环绕逻辑
-            Debug.Log("回旋镖开始返回玩家 - 状态已设置");
+            //Debug.Log("回旋镖开始返回玩家 - 状态已设置");
 
             // 立即测试一次返回逻辑
             if (playerTransform != null)
             {
                 Vector3 returnTarget = playerTransform.position + Vector3.up * 1.5f;
-                Debug.Log($"返回目标位置: {returnTarget}, 当前位置: {transform.position}, 距离: {Vector3.Distance(transform.position, returnTarget)}");
+                //Debug.Log($"返回目标位置: {returnTarget}, 当前位置: {transform.position}, 距离: {Vector3.Distance(transform.position, returnTarget)}");
             }
             else
             {
-                Debug.LogError("playerTransform 为 null！无法返回！");
+                //Debug.LogError("playerTransform 为 null！无法返回！");
             }
         }
         else
         {
-            Debug.Log("StartReturn 被调用，但已经在返回状态中");
+            //Debug.Log("StartReturn 被调用，但已经在返回状态中");
         }
     }
 
@@ -251,7 +251,7 @@ public class BoomerangProjectile : MonoBehaviour
         // If boomerang hits an obstacle during forward or circle phase, it starts returning
         if (!isReturning)
         {
-            Debug.Log($"Boomerang hit obstacle: {other.name}, returning.");
+            //Debug.Log($"Boomerang hit obstacle: {other.name}, returning.");
             StartReturn();
         }
     }

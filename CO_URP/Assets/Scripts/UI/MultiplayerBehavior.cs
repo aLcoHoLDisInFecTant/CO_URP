@@ -23,7 +23,7 @@ public class MultiplayerBehavior : MonoBehaviour
     void Update()
     {
         multiplier = scoreManager.CombinedMultiplier;
-        progressBar.currentPercent = Mathf.Clamp01(multiplier / 4f) * 100f;
+        progressBar.currentPercent = Mathf.Clamp01((multiplier-1f) / 3f) * 100f;
         progressBar.isOn = true; // 开始驱动内部更新
     }
 }

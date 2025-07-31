@@ -1,4 +1,6 @@
-using Michsky.MUIP;
+Ôªøusing Michsky.MUIP;
+using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class RegularCollection : MonoBehaviour, ICollection
@@ -9,11 +11,25 @@ public class RegularCollection : MonoBehaviour, ICollection
     [Header("UI")]
     [SerializeField] private ProgressBar progressBar;
     [SerializeField] private Canvas canvas;
+    [SerializeField] private GameObject panel_1;
+    [SerializeField] private GameObject panel_2;
+
+    [System.Serializable]
+    public class TriggerEvent
+    {
+        public string eventName;
+        public string eventInput;
+    }
+
+    public List<TriggerEvent> triggerEvents = new List<TriggerEvent>();
+
+    public string panelEventName;
+    public string panelEventInput;
 
     private float timer = 0f;
     private bool isCollecting = false;
     private bool playerInTrigger = false;
-    private Collider playerCollider;
+    private Collider playerCollider;  
 
     private void Start()
     {
@@ -22,13 +38,14 @@ public class RegularCollection : MonoBehaviour, ICollection
 
         if (progressBar != null) {
             progressBar.currentPercent = 0f;
-            progressBar.speed = (1 / requiredTime);  //  π∆‰ 1 √ÎÃÓ≥‰ 1.0
+            progressBar.speed = (1 / requiredTime);  // ‰ΩøÂÖ∂ 1 ÁßíÂ°´ÂÖÖ 1.0
             progressBar.invert = false;
             progressBar.restart = false;
             progressBar.isOn = false;
 
             //progressBar.onValueChanged.AddListener(OnProgressUpdated);
         }
+        EventManager.StartListening(panelEventName, ShowChatBalloon);
             
     }
 
@@ -45,7 +62,7 @@ public class RegularCollection : MonoBehaviour, ICollection
             {
 
                 progressBar.currentPercent = Mathf.Clamp01(timer / requiredTime) * 100f;
-                progressBar.isOn = true; // ø™ º«˝∂Øƒ⁄≤ø∏¸–¬
+                progressBar.isOn = true; // ÂºÄÂßãÈ©±Âä®ÂÜÖÈÉ®Êõ¥Êñ∞
             }
 
             if (timer >= requiredTime)
@@ -59,6 +76,7 @@ public class RegularCollection : MonoBehaviour, ICollection
 
     private void OnTriggerEnter(Collider other)
     {
+        panel_2.gameObject.SetActive(false);
         if (IsPlayer(other))
         {
             playerInTrigger = true;
@@ -66,8 +84,11 @@ public class RegularCollection : MonoBehaviour, ICollection
             isCollecting = true;
             timer = 0f;
 
-            if (canvas != null)
+            if (canvas != null) { 
                 canvas.gameObject.SetActive(true);
+                panel_1.gameObject.SetActive(true);
+                panel_2.gameObject.SetActive(false);
+            }
 
             if (progressBar != null)
             {
@@ -84,6 +105,7 @@ public class RegularCollection : MonoBehaviour, ICollection
             playerInTrigger = false;
             isCollecting = false;
             timer = 0f;
+            
 
             if (progressBar != null)
             {
@@ -94,12 +116,39 @@ public class RegularCollection : MonoBehaviour, ICollection
             if (canvas != null)
                 canvas.gameObject.SetActive(false);
         }
+        EventManager.StopListening(panelEventName, ShowChatBalloon);
+    }
+
+    public void ShowChatBalloon(object data)
+    {
+        if (data == null) return;
+
+        string received = data.ToString().Trim();
+        if (panelEventInput.Trim().Equals(received))
+        {
+            Debug.Log($"[RegularCollection] ‰∫ã‰ª∂ÂåπÈÖçÊàêÂäüÔºö{received}");
+            canvas.gameObject.SetActive(true);
+            panel_1.gameObject.SetActive(false);
+            panel_2.gameObject.SetActive(true);
+        }
+        else
+        {
+            Debug.Log($"[RegularCollection] Êî∂Âà∞‰∫ã‰ª∂Ôºö{received}Ôºå‰ΩÜÊú™ÂåπÈÖç {panelEventInput}");
+        }
     }
 
     public void OnCollected(GameObject collector)
     {
         ScoreManager.Instance?.AddScoredPoints(collectionScore);
-        // ø…¿©’π£∫∂Øª≠/“Ù–ß/»ŒŒÒœµÕ≥
+        foreach (var evt in triggerEvents)
+        {
+            if (!string.IsNullOrEmpty(evt.eventName))
+            {
+                EventManager.TriggerEvent(evt.eventName, evt.eventInput);
+                Debug.Log($"[RegularCollection] Ëß¶Âèë‰∫ã‰ª∂Ôºö{evt.eventName}Ôºà{evt.eventInput}Ôºâ");
+            }
+        }
+        // ÂèØÊâ©Â±ïÔºöÂä®Áîª/Èü≥Êïà/‰ªªÂä°Á≥ªÁªü
     }
 
     private bool IsPlayer(Collider other)
