@@ -39,7 +39,7 @@ public class DestructibleBox : MonoBehaviour
             GameObject fx = Instantiate(destructionFX, transform.position, Quaternion.identity);
             Destroy(fx, 2f); // 假设特效持续2秒
         }
-
+        EventManager.TriggerEvent("PlaySFX", "boxHit");
         Destroy(gameObject); // 销毁箱子对象
     }
 }

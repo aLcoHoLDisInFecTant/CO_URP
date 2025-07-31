@@ -35,6 +35,7 @@ public class CoinCollection : MonoBehaviour, ICollection
             }
         }
         // 可扩展：播放音效、动画
+        EventManager.TriggerEvent("PlaySFX", "pickUpCoin");
     }
 
     private bool IsPlayer(Collider other)

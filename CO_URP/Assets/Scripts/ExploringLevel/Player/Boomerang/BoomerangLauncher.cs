@@ -7,9 +7,9 @@ public class BoomerangLauncher : MonoBehaviour
     public GameObject boomerangPrefab;
     public float launchSpeed = 20f;
     public float returnSpeed = 18f;
-    public float maxForwardDistance = 15f; // Max distance for the forward throw
-    public float circleRadius = 8f;       // Radius for the circle throw
-    public float circleSpeed = 360f;      // Degrees per second for circle throw
+    public float maxForwardDistance = 10f; // Max distance for the forward throw
+    public float circleRadius = 5f;       // Radius for the circle throw
+    public float circleSpeed = 270f;      // Degrees per second for circle throw
 
     [Header("Visuals")]
     public LineRenderer trajectoryRenderer; // Optional preview renderer
@@ -40,6 +40,7 @@ public class BoomerangLauncher : MonoBehaviour
     /// <param name="forwardDirection">The direction to throw the boomerang.</param>
     public void LaunchForward(Vector3 forwardDirection)
     {
+        EventManager.TriggerEvent("PlaySFX", "swingFast");
         if (currentBoomerang != null || boomerangPrefab == null) return;
 
         Vector3 launchPosition = player.transform.position + Vector3.up * 1.5f; // Launch from chest height
@@ -59,6 +60,7 @@ public class BoomerangLauncher : MonoBehaviour
     /// <param name="clockwise">True for a clockwise circle, false for counter-clockwise.</param>
     public void LaunchCircle(bool clockwise)
     {
+        EventManager.TriggerEvent("PlaySFX", "swingFast");
         if (currentBoomerang != null || boomerangPrefab == null) return;
 
         Vector3 launchPosition = player.transform.position + Vector3.up * 1.5f; // Launch from chest height

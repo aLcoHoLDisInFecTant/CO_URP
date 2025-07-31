@@ -43,6 +43,7 @@ public class GuideManager : MonoBehaviour
         canvas.gameObject.SetActive(true);
         string guideID = data as string;
         string content = CSVTextManager.Instance.GetTextByID(guideID);
+        EventManager.TriggerEvent("playSFX", "popUI");
         //Debug.Log("ÎÄ±¾¶ÁÈ¡" + content);
         //GuideUI.Instance.ShowGuide(content, OnGuideClosed);
         inputfield.text = content;
