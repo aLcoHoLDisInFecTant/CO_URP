@@ -25,18 +25,16 @@ public class HUDCtrl : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // 检查ScoreHUDBridge的实例和文本组件是否都存在，以避免在场景加载或销毁时出现空引用错误
+
         if (ScoreHUDBridge.Instance != null && coinCountText != null)
         {
-            // 从ScoreHUDBridge单例中获取当前的CoinCount
+
             int currentCoins = ScoreHUDBridge.Instance.CoinCount;
             int currentScore = Mathf.RoundToInt(ScoreHUDBridge.Instance.GetTotalScore());
-            // 更新TextMeshProUGUI组件的文本内容
-            // ToString()方法将整数转换为字符串
+
             coinCountText.text = currentCoins.ToString();
             ScoreText.text = currentScore.ToString();
-            // 如果您想添加一些前缀，可以这样做：
-            // coinCountText.text = "Coins: " + currentCoins.ToString();
+
         }
     }
 }
