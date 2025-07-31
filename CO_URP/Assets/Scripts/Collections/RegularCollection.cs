@@ -122,7 +122,7 @@ public class RegularCollection : MonoBehaviour, ICollection
     public void ShowChatBalloon(object data)
     {
         if (data == null) return;
-
+        //EventManager.TriggerEvent("PlaySFX", "kidHey");
         string received = data.ToString().Trim();
         if (panelEventInput.Trim().Equals(received))
         {

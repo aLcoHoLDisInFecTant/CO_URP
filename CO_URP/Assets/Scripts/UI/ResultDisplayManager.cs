@@ -122,5 +122,6 @@ public class ResultDisplayManager : MonoBehaviour
     public void OnApplicationQuit()
     {
         Debug.Log("quit");
+        Application.Quit();
     }
 }

@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections.Generic;
 using System.Collections;
 
@@ -6,13 +6,13 @@ public class AudioManager : MonoBehaviour
 {
     public static AudioManager Instance;
 
-    [Header("��������")]
+    [Header("背景音乐源")]
     public AudioSource musicSource;
 
-    [Header("��ЧԴ���ɸ��ã�")]
+    [Header("音效源（单通道）")]
     public AudioSource sfxSource;
 
-    [Header("��Ƶ������")]
+    [Header("音乐剪辑列表")]
     public List<AudioClip> musicClips;
     public List<AudioClip> sfxClips;
 
@@ -25,48 +25,83 @@ public class AudioManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
         InitializeDictionaries();
+
+        // ✅ 注册事件监听
+        EventManager.StartListening("PlayBGM", OnPlayBGM);
+        EventManager.StartListening("PlaySFX", OnPlaySFX);
+    }
+
+    void OnDestroy()
+    {
+        // ✅ 注销事件监听
+        EventManager.StopListening("PlayBGM", OnPlayBGM);
+        EventManager.StopListening("PlaySFX", OnPlaySFX);
     }
 
     void InitializeDictionaries()
     {
         musicDict = new Dictionary<string, AudioClip>();
         foreach (var clip in musicClips)
-            musicDict[clip.name] = clip;
+            if (clip != null)
+                musicDict[clip.name] = clip;
 
         sfxDict = new Dictionary<string, AudioClip>();
         foreach (var clip in sfxClips)
-            sfxDict[clip.name] = clip;
+            if (clip != null)
+                sfxDict[clip.name] = clip;
     }
 
+    // ✅ 响应事件：播放BGM
+    private void OnPlayBGM(object data)
+    {
+        if (data == null) return;
+        string bgmName = data.ToString().Trim();
+        Debug.Log($"[AudioManager] 收到事件 PlayBGM：{bgmName}");
+        PlayMusic(bgmName);
+    }
+
+    // ✅ 响应事件：播放SFX
+    private void OnPlaySFX(object data)
+    {
+        if (data == null) return;
+        string sfxName = data.ToString().Trim();
+        Debug.Log($"[AudioManager] 收到事件 PlaySFX：{sfxName}");
+        PlaySFX(sfxName);
+    }
+
+    // ✅ 主接口：播放背景音乐
     public void PlayMusic(string name, bool loop = true)
     {
-        if (!musicDict.ContainsKey(name))
+        if (!musicDict.TryGetValue(name, out var clip))
         {
-            Debug.LogWarning($"[AudioManager] δ�ҵ�����: {name}");
+            Debug.LogWarning($"[AudioManager] 未找到背景音乐：{name}");
             return;
         }
 
-        musicSource.clip = musicDict[name];
+        musicSource.clip = clip;
         musicSource.loop = loop;
         musicSource.Play();
     }
 
+    // ✅ 主接口：播放音效
     public void PlaySFX(string name)
     {
-        if (!sfxDict.ContainsKey(name))
+        if (!sfxDict.TryGetValue(name, out var clip))
         {
-            Debug.LogWarning($"[AudioManager] δ�ҵ���Ч: {name}");
+            Debug.LogWarning($"[AudioManager] 未找到音效：{name}");
             return;
         }
 
-        sfxSource.PlayOneShot(sfxDict[name]);
+        sfxSource.PlayOneShot(clip);
     }
 
+    // ✅ 停止播放背景音乐
     public void StopMusic()
     {
         musicSource.Stop();
     }
 
+    // ✅ 设置音量
     public void SetMusicVolume(float volume)
     {
         musicSource.volume = Mathf.Clamp01(volume);
@@ -77,15 +112,16 @@ public class AudioManager : MonoBehaviour
         sfxSource.volume = Mathf.Clamp01(volume);
     }
 
+    // ✅ 播放部分音效（限时）
     public void PlaySFXForDuration(string name, float duration)
     {
-        if (!sfxDict.ContainsKey(name))
+        if (!sfxDict.TryGetValue(name, out var clip))
         {
-            Debug.LogWarning($"[AudioManager] δ�ҵ���Ч: {name}");
+            Debug.LogWarning($"[AudioManager] 未找到音效：{name}");
             return;
         }
 
-        StartCoroutine(PlaySFXPartial(sfxDict[name], duration));
+        StartCoroutine(PlaySFXPartial(clip, duration));
     }
 
     private IEnumerator PlaySFXPartial(AudioClip clip, float duration)
@@ -95,5 +131,4 @@ public class AudioManager : MonoBehaviour
         yield return new WaitForSeconds(duration);
         sfxSource.Stop();
     }
-
 }

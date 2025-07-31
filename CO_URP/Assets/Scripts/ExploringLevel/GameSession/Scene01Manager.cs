@@ -22,6 +22,7 @@ public class Scene01Manager : MonoBehaviour
         // 场景加载完成后初始化
         InitializeScene();
         EventManager.StartListening("GuideClosed", TimeResume);
+        EventManager.TriggerEvent("PlayBGM", "Bgm_01");
     }
 
     void InitializeScene()

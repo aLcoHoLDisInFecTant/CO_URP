@@ -16,8 +16,8 @@ public class HUDCtrl : MonoBehaviour
     private TMP_InputField ScoreText;
     [SerializeField]
     private GameObject starIcon;
-    private GameObject starIcon_2;
-    private GameObject starIcon_3;
+    [SerializeField] private GameObject starIcon_2;
+    [SerializeField] private GameObject starIcon_3;
     private int starsCount = 0;
 
     void Start()

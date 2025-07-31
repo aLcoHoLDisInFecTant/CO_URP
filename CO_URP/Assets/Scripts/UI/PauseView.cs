@@ -1,13 +1,14 @@
+using Michsky.MUIP;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class PausedView : BaseView
 {
-    [SerializeField] private Button resumeButton;
-    [SerializeField] private Button restartButton;
-    [SerializeField] private Button scoreboardButton;
-    [SerializeField] private Button mainMenuButton;
+    [SerializeField] private ButtonManager resumeButton;
+    [SerializeField] private ButtonManager restartButton;
+    [SerializeField] private ButtonManager scoreboardButton;
+    [SerializeField] private ButtonManager mainMenuButton;
 
     public override void Init()
     {
