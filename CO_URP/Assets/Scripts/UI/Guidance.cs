@@ -8,6 +8,9 @@ public class GuideManager : MonoBehaviour
     [SerializeField] public Player_Explore player;
     [SerializeField] public GameObject guidance;
     [SerializeField] public TMP_InputField inputfield;
+
+    [Header("videoPlayer")]
+    public VideoManager videomanager;
     //[SerializeField] public ProgressBar progressbar;
     private Transform canvas;
     //private bool guideCompleted = false;
@@ -16,6 +19,7 @@ public class GuideManager : MonoBehaviour
     private void OnEnable()
     {
         EventManager.StartListening("ShowGuide", OnShowGuide);
+        EventManager.StartListening("PlayVideo", OnVideoPlay);
         canvas = guidance.transform.Find("Canvas");
         
     }
@@ -55,5 +59,21 @@ public class GuideManager : MonoBehaviour
         //Debug.Log("Òýµ¼Ò³¹Ø±Õ");
         canvas.gameObject.SetActive(false);
         EventManager.TriggerEvent("GuideClosed");
+        videomanager.ResetPlayer();
+    }
+
+    void OnVideoPlay(object data) {
+        if (videomanager) 
+        {
+            if ("move".Equals(data))
+            {
+                videomanager.PlayVideo("move", true);
+            }
+            else if ("boomer".Equals(data)) 
+            {
+                videomanager.PlayVideo("boomer", true);
+            }
+        
+        }
     }
 }

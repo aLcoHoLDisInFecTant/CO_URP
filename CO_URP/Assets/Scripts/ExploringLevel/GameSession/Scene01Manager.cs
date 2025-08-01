@@ -72,6 +72,7 @@ public class Scene01Manager : MonoBehaviour
         // 示例：调用 EventManager 触发初始事件
         Debug.Log("触发第一个对话");
         EventManager.TriggerEvent("ShowGuide", "guide_004");
+        EventManager.TriggerEvent("PlayVideo", "move");
         Time.timeScale = 0f;
 
         // 或者你也可以直接调用初始事件函数

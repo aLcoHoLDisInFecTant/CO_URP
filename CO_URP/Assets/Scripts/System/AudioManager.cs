@@ -19,23 +19,32 @@ public class AudioManager : MonoBehaviour
     private Dictionary<string, AudioClip> musicDict;
     private Dictionary<string, AudioClip> sfxDict;
 
+    // 防止频繁播放音效
+    private float lastSFXTime = 0f;
+    private float sfxCooldown = 0.05f; // 50ms间隔限制
+
+    // 限制协程重复播放
+    private Coroutine currentSFXCoroutine;
+
     void Awake()
     {
         if (Instance != null) { Destroy(gameObject); return; }
         Instance = this;
         DontDestroyOnLoad(gameObject);
         InitializeDictionaries();
+    }
 
-        // ✅ 注册事件监听
+    void OnEnable()
+    {
         EventManager.StartListening("PlayBGM", OnPlayBGM);
         EventManager.StartListening("PlaySFX", OnPlaySFX);
     }
 
-    void OnDestroy()
+    void OnDisable()
     {
-        // ✅ 注销事件监听
         EventManager.StopListening("PlayBGM", OnPlayBGM);
         EventManager.StopListening("PlaySFX", OnPlaySFX);
+        ClearAllAudio(); // 场景切换时释放资源
     }
 
     void InitializeDictionaries()
@@ -51,25 +60,7 @@ public class AudioManager : MonoBehaviour
                 sfxDict[clip.name] = clip;
     }
 
-    // ✅ 响应事件：播放BGM
-    private void OnPlayBGM(object data)
-    {
-        if (data == null) return;
-        string bgmName = data.ToString().Trim();
-        Debug.Log($"[AudioManager] 收到事件 PlayBGM：{bgmName}");
-        PlayMusic(bgmName);
-    }
-
-    // ✅ 响应事件：播放SFX
-    private void OnPlaySFX(object data)
-    {
-        if (data == null) return;
-        string sfxName = data.ToString().Trim();
-        Debug.Log($"[AudioManager] 收到事件 PlaySFX：{sfxName}");
-        PlaySFX(sfxName);
-    }
-
-    // ✅ 主接口：播放背景音乐
+    // 播放背景音乐
     public void PlayMusic(string name, bool loop = true)
     {
         if (!musicDict.TryGetValue(name, out var clip))
@@ -83,9 +74,14 @@ public class AudioManager : MonoBehaviour
         musicSource.Play();
     }
 
-    // ✅ 主接口：播放音效
+    // 播放音效（含冷却限制）
     public void PlaySFX(string name)
     {
+        if (Time.unscaledTime - lastSFXTime < sfxCooldown)
+            return;
+
+        lastSFXTime = Time.unscaledTime;
+
         if (!sfxDict.TryGetValue(name, out var clip))
         {
             Debug.LogWarning($"[AudioManager] 未找到音效：{name}");
@@ -95,13 +91,38 @@ public class AudioManager : MonoBehaviour
         sfxSource.PlayOneShot(clip);
     }
 
-    // ✅ 停止播放背景音乐
+    // 播放限时音效（会中断上一段）
+    public void PlaySFXForDuration(string name, float duration)
+    {
+        if (!sfxDict.TryGetValue(name, out var clip))
+        {
+            Debug.LogWarning($"[AudioManager] 未找到音效：{name}");
+            return;
+        }
+
+        if (currentSFXCoroutine != null)
+            StopCoroutine(currentSFXCoroutine);
+
+        currentSFXCoroutine = StartCoroutine(PlaySFXPartial(clip, duration));
+    }
+
+    private IEnumerator PlaySFXPartial(AudioClip clip, float duration)
+    {
+        sfxSource.clip = clip;
+        sfxSource.Play();
+        yield return new WaitForSeconds(duration);
+        sfxSource.Stop();
+        sfxSource.clip = null;
+    }
+
+    // 停止背景音乐
     public void StopMusic()
     {
         musicSource.Stop();
+        musicSource.clip = null;
     }
 
-    // ✅ 设置音量
+    // 设置音量
     public void SetMusicVolume(float volume)
     {
         musicSource.volume = Mathf.Clamp01(volume);
@@ -112,23 +133,38 @@ public class AudioManager : MonoBehaviour
         sfxSource.volume = Mathf.Clamp01(volume);
     }
 
-    // ✅ 播放部分音效（限时）
-    public void PlaySFXForDuration(string name, float duration)
+    // 清理所有音频资源（推荐在SetActive(false)或场景切换时使用）
+    public void ClearAllAudio()
     {
-        if (!sfxDict.TryGetValue(name, out var clip))
+        StopMusic();
+        if (sfxSource != null)
         {
-            Debug.LogWarning($"[AudioManager] 未找到音效：{name}");
-            return;
+            sfxSource.Stop();
+            sfxSource.clip = null;
         }
 
-        StartCoroutine(PlaySFXPartial(clip, duration));
+        if (currentSFXCoroutine != null)
+        {
+            StopCoroutine(currentSFXCoroutine);
+            currentSFXCoroutine = null;
+        }
     }
 
-    private IEnumerator PlaySFXPartial(AudioClip clip, float duration)
+    // 事件回调：播放BGM
+    private void OnPlayBGM(object data)
     {
-        sfxSource.clip = clip;
-        sfxSource.Play();
-        yield return new WaitForSeconds(duration);
-        sfxSource.Stop();
+        if (data == null) return;
+        string bgmName = data.ToString().Trim();
+        Debug.Log($"[AudioManager] 收到事件 PlayBGM：{bgmName}");
+        PlayMusic(bgmName);
+    }
+
+    // 事件回调：播放SFX
+    private void OnPlaySFX(object data)
+    {
+        if (data == null) return;
+        string sfxName = data.ToString().Trim();
+        Debug.Log($"[AudioManager] 收到事件 PlaySFX：{sfxName}");
+        PlaySFX(sfxName);
     }
 }
