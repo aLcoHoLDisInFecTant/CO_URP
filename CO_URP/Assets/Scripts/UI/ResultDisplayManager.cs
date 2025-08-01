@@ -121,6 +121,7 @@ public class ResultDisplayManager : MonoBehaviour
 
     public void OnApplicationQuit()
     {
+        AudioManager.Instance.ClearAllAudio();
         Debug.Log("quit");
         Application.Quit();
     }

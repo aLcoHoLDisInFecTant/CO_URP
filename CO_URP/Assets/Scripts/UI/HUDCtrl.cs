@@ -52,20 +52,21 @@ public class HUDCtrl : MonoBehaviour
 
     void LightStar(object id) 
     {
-        switch (id) 
+        Debug.Log("µ„¡¡" + id);
+        if ("0".Equals(id))
         {
-            case 0:
-                starIcon.SetActive(true);
-                starCount++;
-                break;
-            case 1: 
-                starIcon_2.SetActive(true);
-                starCount++;
-                break;
-            case 2:
-                starIcon_3.SetActive(true);
-                starCount++;
-                break;
+            starIcon.SetActive(true);
+            starCount++;
+        }
+        else if ("1".Equals(id))
+        {
+            starIcon_2.SetActive(true);
+            starCount++;
+        }
+        else if ("2".Equals(id)) 
+        {
+            starIcon_3.SetActive(true);
+            starCount++;
         }
     }
 
