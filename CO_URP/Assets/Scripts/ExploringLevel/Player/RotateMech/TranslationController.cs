@@ -2,7 +2,7 @@
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
-public class TranslationalController : MonoBehaviour, IControllable, ICommandTranslator
+public class TranslationalController : MonoBehaviour
 {
     [Header("平移控制设置")]
     [Tooltip("移动速度 (单位/秒)")]
@@ -125,7 +125,7 @@ public class TranslationalController : MonoBehaviour, IControllable, ICommandTra
         Gizmos.DrawLine(center, center + transform.forward);
     }
 
-    public ICommandTranslator GetCommandTranslator() => this;
+    //public ICommandTranslator GetCommandTranslator() => this;
 
     public void TranslateCommand(ECommand command, PressedState state)
     {

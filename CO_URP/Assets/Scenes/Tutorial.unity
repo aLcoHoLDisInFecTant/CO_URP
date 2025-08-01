@@ -624,10 +624,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d08276f6492e9e408044cba2173cd66, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  canvas: {fileID: 841122451}
-  rc: {fileID: 18270760}
-  panel_1: {fileID: 0}
-  panel_2: {fileID: 0}
 --- !u!114 &18270760
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5213,7 +5209,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Placeholder
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 4bd810f1cbcb0f446a8f5a31453e243f, type: 2}
   m_sharedMaterial: {fileID: 21539420542967178, guid: 4bd810f1cbcb0f446a8f5a31453e243f,
@@ -9919,18 +9915,6 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 162086849}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &362979374 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 348299076068903877, guid: 89becfabde6b7bd418f696d3ebe84845,
-    type: 3}
-  m_PrefabInstance: {fileID: 162086849}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 362979373}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3dabbba0e3c01aa4dade97b5523257e3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &362979376
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9943,7 +9927,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc799014d58959f4db640399669e00ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rc: {fileID: 362979374}
 --- !u!1 &370242308
 GameObject:
   m_ObjectHideFlags: 0
@@ -19708,7 +19691,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: acd07c657d374ca42ab29b45dac3d4f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rc: {fileID: 730972973}
 --- !u!114 &730972973
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -37452,7 +37434,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Placeholder
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 4bd810f1cbcb0f446a8f5a31453e243f, type: 2}
   m_sharedMaterial: {fileID: 21539420542967178, guid: 4bd810f1cbcb0f446a8f5a31453e243f,
@@ -41275,7 +41257,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Placeholder
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 4bd810f1cbcb0f446a8f5a31453e243f, type: 2}
   m_sharedMaterial: {fileID: 21539420542967178, guid: 4bd810f1cbcb0f446a8f5a31453e243f,

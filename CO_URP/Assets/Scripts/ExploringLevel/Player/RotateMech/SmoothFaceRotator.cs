@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 [RequireComponent(typeof(Rigidbody))]
-public class SmoothFaceRotator : MonoBehaviour, IControllable, ICommandTranslator
+public class SmoothFaceRotator : MonoBehaviour
 {
     [Header("六面对象（可空）")]
     public Transform posX, negX, posY, negY, posZ, negZ;
@@ -273,7 +273,7 @@ public class SmoothFaceRotator : MonoBehaviour, IControllable, ICommandTranslato
         }
     }
 
-    public ICommandTranslator GetCommandTranslator() => this;
+    //public ICommandTranslator GetCommandTranslator() => this;
 
     public void TranslateCommand(ECommand command, PressedState state)
     {
