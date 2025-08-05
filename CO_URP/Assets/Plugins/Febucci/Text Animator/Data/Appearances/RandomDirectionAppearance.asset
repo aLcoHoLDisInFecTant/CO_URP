@@ -1,17 +1,3 @@
-%YAML 1.1
-%TAG !u! tag:unity3d.com,2011:
---- !u!114 &11400000
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6a65a9b7775dded41a0295e6f75be25d, type: 3}
-  m_Name: RandomDirectionAppearance
-  m_EditorClassIdentifier: 
-  tagID: 
-  baseDuration: 0.5
-  baseAmount: 10
+version https://git-lfs.github.com/spec/v1
+oid sha256:b4c2230aa445806542ce5def831e5444f067f8dd94a8db20d1d4cc0b818b8400
+size 461

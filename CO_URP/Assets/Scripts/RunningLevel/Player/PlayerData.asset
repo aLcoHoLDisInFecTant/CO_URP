@@ -1,20 +1,3 @@
-%YAML 1.1
-%TAG !u! tag:unity3d.com,2011:
---- !u!114 &11400000
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4bd229b99bf030e43a3d068210827e72, type: 3}
-  m_Name: PlayerData
-  m_EditorClassIdentifier: 
-  <InvincibilityTime>k__BackingField: 1
-  <SwitchSpeed>k__BackingField: 10
-  <FlyingSpeed>k__BackingField: 10
-  <SlideRollDuration>k__BackingField: 1
-  <MaxHorizontalLanes>k__BackingField: 3
-  <MaxAltitudeLevels>k__BackingField: 2
+version https://git-lfs.github.com/spec/v1
+oid sha256:3880932ba65f50df1e8a98c7763f8097456c6f85afa6c94ce6310878c241347c
+size 630

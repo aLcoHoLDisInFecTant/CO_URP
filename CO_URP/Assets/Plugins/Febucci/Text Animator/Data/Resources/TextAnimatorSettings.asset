@@ -1,29 +1,3 @@
-%YAML 1.1
-%TAG !u! tag:unity3d.com,2011:
---- !u!114 &11400000
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9743a50feedea474dbef99517d3e30eb, type: 3}
-  m_Name: TextAnimatorSettings
-  m_EditorClassIdentifier: 
-  behaviors:
-    defaultDatabase: {fileID: 0}
-    enabled: 1
-    openingSymbol: 60
-    closingSymbol: 62
-  appearances:
-    defaultDatabase: {fileID: 0}
-    enabled: 1
-    openingSymbol: 123
-    closingSymbol: 125
-  actions:
-    defaultDatabase: {fileID: 0}
-    enabled: 1
-    openingSymbol: 60
-    closingSymbol: 62
+version https://git-lfs.github.com/spec/v1
+oid sha256:8345d415e92dbf9351cdeb1e3d97ae1da9576ba542bfdb9c6d40da857fc3a301
+size 726
