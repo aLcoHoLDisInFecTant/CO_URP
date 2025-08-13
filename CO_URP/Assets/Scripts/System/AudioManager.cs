@@ -47,6 +47,30 @@ public class AudioManager : MonoBehaviour
         ClearAllAudio(); // 场景切换时释放资源
     }
 
+        void OnDestroy()
+        {
+            // 取消事件监听，避免事件管理器持有对本实例的强引用
+            EventManager.StopListening("PlayBGM", OnPlayBGM);
+            EventManager.StopListening("PlaySFX", OnPlaySFX);
+
+            // 停止正在播放的音频和协程，释放引用
+            ClearAllAudio();
+
+            // 清空字典释放对音频资源的引用
+            if (musicDict != null)
+                musicDict.Clear();
+            if (sfxDict != null)
+                sfxDict.Clear();
+
+            // 将单例实例置空，方便 GC 回收
+            if (Instance == this)
+                Instance = null;
+
+            // 主动卸载未使用的资源，降低内存占用（异步执行）
+            Resources.UnloadUnusedAssets();
+        }
+
+
     void InitializeDictionaries()
     {
         musicDict = new Dictionary<string, AudioClip>();
