@@ -48,6 +48,11 @@ namespace ChosTIS
             highlighter.sizeDelta = size;
         }
 
+        public void SetTileSize()
+        {
+            highlighter.sizeDelta = new Vector2(TetrisItemGrid.tileSizeWidth, TetrisItemGrid.tileSizeHeight);
+        }
+
         public void Show(bool b)
         {
             highlighter.gameObject.SetActive(b);

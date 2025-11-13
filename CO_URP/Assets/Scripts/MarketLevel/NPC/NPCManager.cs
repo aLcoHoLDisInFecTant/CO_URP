@@ -3,17 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-// Â·ÈËÀàÐÍÃ¶¾Ù
+// Â·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã¶ï¿½ï¿½
 public enum NPCType
 {
-    QuickShopper,      // ¿ìËÙ¹ºÎïÕß
-    BrowserShopper,    // ÏÐ¹ä¹ºÎïÕß
-    TargetShopper,     // Ä¿±êÃ÷È·¹ºÎïÕß
-    Employee,          // Ô±¹¤
-    Wanderer          // Ëæ»úÏÐ¹äÕß
+    QuickShopper,      // ï¿½ï¿½ï¿½Ù¹ï¿½ï¿½ï¿½ï¿½ï¿½
+    BrowserShopper,    // ï¿½Ð¹ä¹ºï¿½ï¿½ï¿½ï¿½
+    TargetShopper,     // Ä¿ï¿½ï¿½ï¿½ï¿½È·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    Employee,          // Ô±ï¿½ï¿½
+    Wanderer          // ï¿½ï¿½ï¿½ï¿½Ð¹ï¿½ï¿½ï¿½
 }
 
-// Â·ÈË×´Ì¬Ã¶¾Ù
+// Â·ï¿½ï¿½×´Ì¬Ã¶ï¿½ï¿½
 public enum NPCState
 {
     Idle,
@@ -23,34 +23,34 @@ public enum NPCState
     Leaving
 }
 
-// ¹ºÎïµãÎ»ÐÅÏ¢
+// ï¿½ï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½Ï¢
 [System.Serializable]
 public class ShoppingPoint
 {
     public Transform point;
-    public string category;        // ÉÌÆ·Àà±ð£¨Èç"food", "drinks", "electronics"£©
-    public float priority;         // ÓÅÏÈ¼¶
-    public float shopTime;         // ¹ºÎïÊ±¼ä
+    public string category;        // ï¿½ï¿½Æ·ï¿½ï¿½ï¿½ï¿½ï¿½"food", "drinks", "electronics"ï¿½ï¿½
+    public float priority;         // ï¿½ï¿½ï¿½È¼ï¿½
+    public float shopTime;         // ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½
 }
 
-// Â·ÈË¹ÜÀíÆ÷ - Ö÷¿ØÖÆ½Å±¾
+// Â·ï¿½Ë¹ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½ï¿½ï¿½Æ½Å±ï¿½
 public class NPCManager : MonoBehaviour
 {
-    [Header("Â·ÈËÔ¤ÖÆÌå")]
+    [Header("Â·ï¿½ï¿½Ô¤ï¿½ï¿½ï¿½ï¿½")]
     public GameObject[] npcPrefabs;
 
-    [Header("Éú³ÉµãÎ»")]
+    [Header("ï¿½ï¿½ï¿½Éµï¿½Î»")]
     public Transform[] spawnPoints;
     public Transform[] exitPoints;
 
-    [Header("¹ºÎïµãÎ»")]
+    [Header("ï¿½ï¿½ï¿½ï¿½ï¿½Î»")]
     public ShoppingPoint[] shoppingPoints;
 
-    [Header("Éú³ÉÉèÖÃ")]
+    [Header("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½")]
     public int maxNPCCount = 20;
     public float spawnInterval = 3f;
 
-    [Header("Â·ÈËÀàÐÍÈ¨ÖØ")]
+    [Header("Â·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¨ï¿½ï¿½")]
     [Range(0f, 1f)] public float quickShopperWeight = 0.3f;
     [Range(0f, 1f)] public float browserShopperWeight = 0.25f;
     [Range(0f, 1f)] public float targetShopperWeight = 0.25f;
@@ -62,10 +62,10 @@ public class NPCManager : MonoBehaviour
 
     void Start()
     {
-        // ÑéÖ¤¹ºÎïµãÎ»µÄNavMesh
+        // ï¿½ï¿½Ö¤ï¿½ï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½NavMesh
         ValidateShoppingPoints();
 
-        // ¿ªÊ¼Éú³ÉÂ·ÈË
+        // ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½Â·ï¿½ï¿½
         spawnCoroutine = StartCoroutine(SpawnNPCs());
     }
 
@@ -97,14 +97,14 @@ public class NPCManager : MonoBehaviour
     {
         if (spawnPoints.Length == 0 || npcPrefabs.Length == 0) return;
 
-        // Ëæ»úÑ¡ÔñÉú³ÉµãºÍÔ¤ÖÆÌå
+        // ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½Éµï¿½ï¿½Ô¤ï¿½ï¿½ï¿½ï¿½
         Transform spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
         GameObject prefab = npcPrefabs[Random.Range(0, npcPrefabs.Length)];
 
-        // ¸ù¾ÝÈ¨ÖØÑ¡ÔñÂ·ÈËÀàÐÍ
+        // ï¿½ï¿½ï¿½ï¿½È¨ï¿½ï¿½Ñ¡ï¿½ï¿½Â·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         NPCType npcType = GetRandomNPCType();
 
-        // Éú³ÉÂ·ÈË
+        // ï¿½ï¿½ï¿½ï¿½Â·ï¿½ï¿½
         GameObject npcObj = Instantiate(prefab, spawnPoint.position, spawnPoint.rotation);
         NPCController npcController = npcObj.GetComponent<NPCController>();
 
@@ -113,7 +113,7 @@ public class NPCManager : MonoBehaviour
             npcController = npcObj.AddComponent<NPCController>();
         }
 
-        // ³õÊ¼»¯Â·ÈË
+        // ï¿½ï¿½Ê¼ï¿½ï¿½Â·ï¿½ï¿½
         npcController.Initialize(this, npcType);
         activeNPCs.Add(npcController);
     }
@@ -177,14 +177,14 @@ public class NPCManager : MonoBehaviour
     }
 }
 
-// Â·ÈË¿ØÖÆÆ÷ - µ¥¸öÂ·ÈËµÄÐÐÎª¿ØÖÆ
+// Â·ï¿½Ë¿ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½ï¿½Â·ï¿½Ëµï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½
 public class NPCController : MonoBehaviour
 {
-    [Header("Â·ÈËÐÅÏ¢")]
+    [Header("Â·ï¿½ï¿½ï¿½ï¿½Ï¢")]
     public NPCType npcType;
     public NPCState currentState;
 
-    [Header("ÒÆ¶¯ÉèÖÃ")]
+    [Header("ï¿½Æ¶ï¿½ï¿½ï¿½ï¿½ï¿½")]
     public float walkSpeed = 1.5f;
     public float runSpeed = 3f;
     public float rotationSpeed = 120f;
@@ -194,7 +194,7 @@ public class NPCController : MonoBehaviour
     private Animator animator;
     private NPCBehavior currentBehavior;
 
-    // ÐÐÎªÄ£Ê½×Öµä
+    // ï¿½ï¿½ÎªÄ£Ê½ï¿½Öµï¿½
     private Dictionary<NPCType, NPCBehavior> behaviors;
 
     public void Initialize(NPCManager npcManager, NPCType type)
@@ -202,25 +202,25 @@ public class NPCController : MonoBehaviour
         manager = npcManager;
         npcType = type;
 
-        // »ñÈ¡×é¼þ
+        // ï¿½ï¿½È¡ï¿½ï¿½ï¿½
         agent = GetComponent<NavMeshAgent>();
         if (agent == null)
             agent = gameObject.AddComponent<NavMeshAgent>();
 
         animator = GetComponent<Animator>();
 
-        // ÅäÖÃNavMeshAgent
+        // ï¿½ï¿½ï¿½ï¿½NavMeshAgent
         agent.speed = walkSpeed;
         agent.angularSpeed = rotationSpeed;
         agent.stoppingDistance = 0.5f;
 
-        // ³õÊ¼»¯ÐÐÎªÄ£Ê½
+        // ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ÎªÄ£Ê½
         InitializeBehaviors();
 
-        // ÉèÖÃµ±Ç°ÐÐÎª
+        // ï¿½ï¿½ï¿½Ãµï¿½Ç°ï¿½ï¿½Îª
         SetBehavior(npcType);
 
-        // ¿ªÊ¼ÐÐÎª
+        // ï¿½ï¿½Ê¼ï¿½ï¿½Îª
         currentState = NPCState.Idle;
         if (currentBehavior != null)
         {
@@ -255,7 +255,7 @@ public class NPCController : MonoBehaviour
             agent.SetDestination(destination);
             currentState = NPCState.Moving;
 
-            // ¶¯»­¿ØÖÆ
+            // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             if (animator != null)
             {
                 animator.SetBool("isWalking", true);
@@ -298,7 +298,7 @@ public class NPCController : MonoBehaviour
 
     void Update()
     {
-        // ¼ì²éÊÇ·ñµ½´ïÄ¿µÄµØ
+        // ï¿½ï¿½ï¿½ï¿½Ç·ñµ½´ï¿½Ä¿ï¿½Äµï¿½
         if (currentState == NPCState.Moving && HasReachedDestination())
         {
             currentState = NPCState.Idle;
@@ -310,7 +310,7 @@ public class NPCController : MonoBehaviour
     }
 }
 
-// Â·ÈËÐÐÎª»ùÀà
+// Â·ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½
 public abstract class NPCBehavior
 {
     protected NPCController npc;
@@ -325,7 +325,7 @@ public abstract class NPCBehavior
     public abstract IEnumerator ExecuteBehavior();
 }
 
-// ¿ìËÙ¹ºÎïÕßÐÐÎª
+// ï¿½ï¿½ï¿½Ù¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îª
 public class QuickShopperBehavior : NPCBehavior
 {
     private int targetItemCount;
@@ -334,26 +334,26 @@ public class QuickShopperBehavior : NPCBehavior
     public QuickShopperBehavior(NPCController npcController, NPCManager npcManager)
         : base(npcController, npcManager)
     {
-        targetItemCount = Random.Range(1, 4); // ¹ºÂò1-3¼þÎïÆ·
+        targetItemCount = Random.Range(1, 4); // ï¿½ï¿½ï¿½ï¿½1-3ï¿½ï¿½ï¿½ï¿½Æ·
     }
 
     public override IEnumerator ExecuteBehavior()
     {
-        npc.SetSpeed(npc.runSpeed * 0.8f); // ÉÔ¿ìµÄËÙ¶È
+        npc.SetSpeed(npc.runSpeed * 0.8f); // ï¿½Ô¿ï¿½ï¿½ï¿½Ù¶ï¿½
 
         while (currentItemCount < targetItemCount)
         {
-            // Ñ¡Ôñ¹ºÎïµã
+            // Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½
             ShoppingPoint targetPoint = manager.GetRandomShoppingPoint();
             if (targetPoint != null)
             {
-                // Ç°Íù¹ºÎïµã
+                // Ç°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
                 npc.MoveTo(targetPoint.point.position);
 
-                // µÈ´ýµ½´ï
+                // ï¿½È´ï¿½ï¿½ï¿½ï¿½ï¿½
                 yield return new WaitUntil(() => npc.HasReachedDestination());
 
-                // ¿ìËÙ¹ºÎï
+                // ï¿½ï¿½ï¿½Ù¹ï¿½ï¿½ï¿½
                 npc.currentState = NPCState.Shopping;
                 yield return new WaitForSeconds(Random.Range(0.5f, 1.5f));
 
@@ -365,7 +365,7 @@ public class QuickShopperBehavior : NPCBehavior
             }
         }
 
-        // Ç°Íù³ö¿Ú
+        // Ç°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         Transform exit = manager.GetRandomExitPoint();
         if (exit != null)
         {
@@ -377,7 +377,7 @@ public class QuickShopperBehavior : NPCBehavior
     }
 }
 
-// ÏÐ¹ä¹ºÎïÕßÐÐÎª
+// ï¿½Ð¹ä¹ºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îª
 public class BrowserShopperBehavior : NPCBehavior
 {
     public BrowserShopperBehavior(NPCController npcController, NPCManager npcManager)
@@ -385,33 +385,33 @@ public class BrowserShopperBehavior : NPCBehavior
 
     public override IEnumerator ExecuteBehavior()
     {
-        npc.SetSpeed(npc.walkSpeed * 0.7f); // ½ÏÂýµÄËÙ¶È
+        npc.SetSpeed(npc.walkSpeed * 0.7f); // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ù¶ï¿½
 
-        float totalTime = Random.Range(60f, 120f); // ×Ü¹²Í£Áô60-120Ãë
+        float totalTime = Random.Range(60f, 120f); // ï¿½Ü¹ï¿½Í£ï¿½ï¿½60-120ï¿½ï¿½
         float startTime = Time.time;
 
         while (Time.time - startTime < totalTime)
         {
-            // Ëæ»úÑ¡Ôñ¹ºÎïµãÏÐ¹ä
+            // ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¹ï¿½
             ShoppingPoint targetPoint = manager.GetRandomShoppingPoint();
             if (targetPoint != null)
             {
                 npc.MoveTo(targetPoint.point.position);
                 yield return new WaitUntil(() => npc.HasReachedDestination());
 
-                // ³¤Ê±¼ää¯ÀÀ
+                // ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½
                 npc.currentState = NPCState.Shopping;
                 yield return new WaitForSeconds(Random.Range(5f, 15f));
 
-                // Ëæ»ú¾ö¶¨ÊÇ·ñ¹ºÂò
-                if (Random.value < 0.3f) // 30%¸ÅÂÊ¹ºÂò
+                // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½
+                if (Random.value < 0.3f) // 30%ï¿½ï¿½ï¿½Ê¹ï¿½ï¿½ï¿½
                 {
                     yield return new WaitForSeconds(Random.Range(2f, 5f));
                 }
             }
         }
 
-        // Àë¿ª
+        // ï¿½ë¿ª
         Transform exit = manager.GetRandomExitPoint();
         if (exit != null)
         {
@@ -423,7 +423,7 @@ public class BrowserShopperBehavior : NPCBehavior
     }
 }
 
-// Ä¿±êÃ÷È·¹ºÎïÕßÐÐÎª
+// Ä¿ï¿½ï¿½ï¿½ï¿½È·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îª
 public class TargetShopperBehavior : NPCBehavior
 {
     private string[] targetCategories;
@@ -432,7 +432,7 @@ public class TargetShopperBehavior : NPCBehavior
     public TargetShopperBehavior(NPCController npcController, NPCManager npcManager)
         : base(npcController, npcManager)
     {
-        // Ëæ»úÑ¡Ôñ2-4¸öÄ¿±êÀà±ð
+        // ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½2-4ï¿½ï¿½Ä¿ï¿½ï¿½ï¿½ï¿½ï¿½
         string[] allCategories = { "food", "drinks", "electronics", "clothing", "books" };
         int categoryCount = Random.Range(2, 5);
         targetCategories = new string[categoryCount];
@@ -449,24 +449,24 @@ public class TargetShopperBehavior : NPCBehavior
 
         foreach (string category in targetCategories)
         {
-            // Ñ°ÕÒÌØ¶¨Àà±ðµÄ¹ºÎïµã
+            // Ñ°ï¿½ï¿½ï¿½Ø¶ï¿½ï¿½ï¿½ï¿½Ä¹ï¿½ï¿½ï¿½ï¿½
             ShoppingPoint[] categoryPoints = manager.GetShoppingPointsByCategory(category);
 
             if (categoryPoints.Length > 0)
             {
                 ShoppingPoint targetPoint = categoryPoints[Random.Range(0, categoryPoints.Length)];
 
-                // Ö±½ÓÇ°ÍùÄ¿±êÇøÓò
+                // Ö±ï¿½ï¿½Ç°ï¿½ï¿½Ä¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
                 npc.MoveTo(targetPoint.point.position);
                 yield return new WaitUntil(() => npc.HasReachedDestination());
 
-                // ¹ºÎï
+                // ï¿½ï¿½ï¿½ï¿½
                 npc.currentState = NPCState.Shopping;
                 yield return new WaitForSeconds(Random.Range(3f, 8f));
             }
         }
 
-        // Ç°Íù³ö¿Ú
+        // Ç°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         Transform exit = manager.GetRandomExitPoint();
         if (exit != null)
         {
@@ -478,7 +478,7 @@ public class TargetShopperBehavior : NPCBehavior
     }
 }
 
-// Ô±¹¤ÐÐÎª
+// Ô±ï¿½ï¿½ï¿½ï¿½Îª
 public class EmployeeBehavior : NPCBehavior
 {
     private Transform[] workStations;
@@ -490,20 +490,20 @@ public class EmployeeBehavior : NPCBehavior
     {
         npc.SetSpeed(npc.walkSpeed);
 
-        while (true) // Ô±¹¤²»Àë¿ª
+        while (true) // Ô±ï¿½ï¿½ï¿½ï¿½ï¿½ë¿ª
         {
-            // ÔÚ²»Í¬¹¤×÷ÇøÓòÖ®¼äÑ²Âß
+            // ï¿½Ú²ï¿½Í¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö®ï¿½ï¿½Ñ²ï¿½ï¿½
             ShoppingPoint workPoint = manager.GetRandomShoppingPoint();
             if (workPoint != null)
             {
                 npc.MoveTo(workPoint.point.position);
                 yield return new WaitUntil(() => npc.HasReachedDestination());
 
-                // ¹¤×÷£¨ÕûÀí»õ¼Ü¡¢Çå½àµÈ£©
-                npc.currentState = NPCState.Shopping; // ÖØÓÃ×´Ì¬±íÊ¾¹¤×÷
+                // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü¡ï¿½ï¿½ï¿½ï¿½È£ï¿½
+                npc.currentState = NPCState.Shopping; // ï¿½ï¿½ï¿½ï¿½×´Ì¬ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½
                 yield return new WaitForSeconds(Random.Range(10f, 30f));
 
-                // Å¼¶ûÍ£ÏÂÀ´ÐÝÏ¢
+                // Å¼ï¿½ï¿½Í£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢
                 if (Random.value < 0.2f)
                 {
                     npc.currentState = NPCState.Waiting;
@@ -514,7 +514,7 @@ public class EmployeeBehavior : NPCBehavior
     }
 }
 
-// Ëæ»úÏÐ¹äÕßÐÐÎª
+// ï¿½ï¿½ï¿½ï¿½Ð¹ï¿½ï¿½ï¿½ï¿½ï¿½Îª
 public class WandererBehavior : NPCBehavior
 {
     public WandererBehavior(NPCController npcController, NPCManager npcManager)
@@ -522,27 +522,27 @@ public class WandererBehavior : NPCBehavior
 
     public override IEnumerator ExecuteBehavior()
     {
-        npc.SetSpeed(npc.walkSpeed * 0.6f); // ºÜÂýµÄËÙ¶È
+        npc.SetSpeed(npc.walkSpeed * 0.6f); // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ù¶ï¿½
 
         float wanderTime = Random.Range(30f, 90f);
         float startTime = Time.time;
 
         while (Time.time - startTime < wanderTime)
         {
-            // Ëæ»úÑ¡ÔñµãÎ»ÏÐ¹ä
+            // ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½Î»ï¿½Ð¹ï¿½
             ShoppingPoint randomPoint = manager.GetRandomShoppingPoint();
             if (randomPoint != null)
             {
                 npc.MoveTo(randomPoint.point.position);
                 yield return new WaitUntil(() => npc.HasReachedDestination());
 
-                // ³¤Ê±¼äÍ£Áô¹Û²ì
+                // ï¿½ï¿½Ê±ï¿½ï¿½Í£ï¿½ï¿½ï¿½Û²ï¿½
                 npc.currentState = NPCState.Waiting;
                 yield return new WaitForSeconds(Random.Range(8f, 20f));
             }
         }
 
-        // Àë¿ª
+        // ï¿½ë¿ª
         Transform exit = manager.GetRandomExitPoint();
         if (exit != null)
         {

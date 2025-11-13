@@ -19,7 +19,7 @@ public class Player_Explore : MonoBehaviour, IControllable, IResettable, IComman
 
     [SerializeField] public GrappleLauncher grappleLauncher;
 
-    [SerializeField] public BoomerangLauncher boomerangLauncher;
+    //[SerializeField] public BoomerangLauncher boomerangLauncher;
 
     [SerializeField] private PlayerData_Explore playerData;
 
@@ -44,7 +44,7 @@ public class Player_Explore : MonoBehaviour, IControllable, IResettable, IComman
     public float playerHeight;
     public LayerMask whatIsGround;
     bool grounded;
-
+    /*
     [Header("grapple")]
     public Vector3 GrapplePoint;
     public float SwingForce = 3f;
@@ -54,25 +54,28 @@ public class Player_Explore : MonoBehaviour, IControllable, IResettable, IComman
     public bool isBoomerangCharging = false;
     public bool isBoomerangFlying = false;
     public GameObject boomerangModel;
-
+    */
     void Awake()
     {
+        /*
         child = transform.Find("lasso");
         if (child != null) child.gameObject.SetActive(false);
         //CharacterController = GetComponent<CharacterController>();
+        */
         Rb = GetComponent<Rigidbody>();
         Rb.freezeRotation = true;
         Rb.constraints = RigidbodyConstraints.FreezeRotation;
         StateMachine = new PlayerStateMachine_Explore(this);
         Animator = GetComponent<Animator>();
-        boomerangModel.gameObject.SetActive(false);
+        //boomerangModel.gameObject.SetActive(false);
         // Initialize boomerang launcher
+        /*
         boomerangLauncher = GetComponent<BoomerangLauncher>();
         if (boomerangLauncher == null)
         {
             boomerangLauncher = gameObject.AddComponent<BoomerangLauncher>();
         }
-
+        */
         // Set boomerang prefab reference
         /*
         if (boomerangPrefab != null)
@@ -103,12 +106,14 @@ public class Player_Explore : MonoBehaviour, IControllable, IResettable, IComman
         {
             StateMachine.SetState(StateMachine.RiddleState);
         }
+        /*
         if (!isBoomerangCharging && !isBoomerangFlying &&
             (inputQueue.Contains(ECommand.SLIDERIGHT) || inputQueue.Contains(ECommand.SLIDELEFT)))
         {
             StateMachine.SetState(StateMachine.BoomerangState);
             isBoomerangCharging = true;
         }
+        */
         StateMachine.Tick();
     }
 
@@ -117,13 +122,14 @@ public class Player_Explore : MonoBehaviour, IControllable, IResettable, IComman
         StateMachine.FixedTick();
     }
 
+    /*
     public void OnBoomerangReturned()
     {
         isBoomerangFlying = false;
         isBoomerangCharging = false;
         Debug.Log("Boomerang returned to player");
     }
-
+    */
 
     public void SetControllable(bool controllable)
     {
@@ -148,11 +154,13 @@ public class Player_Explore : MonoBehaviour, IControllable, IResettable, IComman
         return this;
     }
 
+    
     public void ResetToDefault()
     {
         StateMachine.SetState(null);
         //PlayerStatictics.ResetToDefault();
 
+        /*
         // Reset boomerang state
         isBoomerangCharging = false;
         isBoomerangFlying = false;
@@ -160,10 +168,10 @@ public class Player_Explore : MonoBehaviour, IControllable, IResettable, IComman
         {
             boomerangLauncher.ForceStopBoomerang();
         }
-
+        */
         Physics.SyncTransforms();
     }
-
+    
     public void TranslateCommand(ECommand command, PressedState state) 
     {
         if (command is ECommand.LEFT or ECommand.RIGHT or ECommand.UP or ECommand.DOWN or ECommand.SLIDELEFT or ECommand.SLIDERIGHT)

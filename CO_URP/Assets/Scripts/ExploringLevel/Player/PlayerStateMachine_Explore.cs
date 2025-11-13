@@ -11,12 +11,12 @@ public class PlayerStateMachine_Explore : StateMachine<Player_Explore>
     public PreviewState PreviewState { get; private set; }
     public MoveToTargetState MovingState { get; private set; }
     public RiddleControlState RiddleState { get; private set; }
-    public GrappleAimState GrappleAimState { get; private set; }
-    public SwingState SwingState { get; private set; }
+    // public GrappleAimState GrappleAimState { get; private set; }
+    // public SwingState SwingState { get; private set; } // ÆúÓÃ
 
-    public BoomerangChargeState BoomerangState { get; private set; }
+    // public BoomerangChargeState BoomerangState { get; private set; } // ÆúÓÃ
 
-    public Vector3 VerticalVelocity;
+    public Vector3 VerticalVelocity; 
     private Transform playerTransform;
     public Transform PlayerTransform { get { return playerTransform; } }
     public Transform DestinationTransform { get { return playerTransform; } }
@@ -42,8 +42,8 @@ public class PlayerStateMachine_Explore : StateMachine<Player_Explore>
         MovingState = new MoveToTargetState(this);
         RiddleState = new RiddleControlState(this);
         //GrappleAimState = new GrappleAimState(this);
-        SwingState = new SwingState(this);
-        BoomerangState = new BoomerangChargeState(this);
+        //SwingState = new SwingState(this);
+        //BoomerangState = new BoomerangChargeState(this);
         //player.SetControllable(true);
     }
 

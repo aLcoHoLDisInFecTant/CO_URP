@@ -23,6 +23,13 @@ namespace ChosTIS
         [SerializeField] private RightClickMenuPanel rightClickMenuPanel;
         public TetrisItem selectedTetrisItem;
         public Vector2Int tileGridOriginPosition;
+        private bool isOpen;
+        public bool isSortingArea;
+        public TetrisItemGrid sortingGrid;
+        public Vector2Int selectionCursor;
+        public TetrisItem heldItem;
+        public TetrisItem currentPickupItem;
+        private bool pendingOrganize;
 
         private TetrisItem overlapItem;
         private Vector2Int oldPosition;
@@ -30,6 +37,12 @@ namespace ChosTIS
 
         private void Update()
         {
+            if (!isOpen) return;
+            if (isSortingArea)
+            {
+                HandleSortingAreaInput();
+                return;
+            }
             //[Debug] Dynamically add items randomly
             if (Input.GetKeyDown(KeyCode.Q))
             {
@@ -78,6 +91,144 @@ namespace ChosTIS
             }
 
             HandleHighlight(selectedTetrisItemGrid != null);
+        }
+
+        public void SetInventoryOpen(bool open)
+        {
+            isOpen = open;
+            if (canvas != null) canvas.enabled = open;
+            if (!open)
+            {
+                if (selectedTetrisItem)
+                {
+                    Destroy(selectedTetrisItem.gameObject);
+                    selectedTetrisItem = null;
+                }
+                if (inventoryHighlight != null) inventoryHighlight.Show(false);
+                if (!isSortingArea)
+                {
+                    EndOrganizeCurrentItem();
+                }
+            }
+        }
+
+        public void EnterSortingArea(TetrisItemGrid grid)
+        {
+            isSortingArea = true;
+            sortingGrid = grid;
+            selectionCursor = new Vector2Int(0, 0);
+            SetInventoryOpen(true);
+            inventoryHighlight.Show(true);
+            inventoryHighlight.SetParent(sortingGrid);
+            inventoryHighlight.SetTileSize();
+            inventoryHighlight.SetPosition(sortingGrid, null, selectionCursor.x, selectionCursor.y);
+        }
+
+        public void ExitSortingArea()
+        {
+            isSortingArea = false;
+            sortingGrid = null;
+            selectionCursor = Vector2Int.zero;
+            heldItem = null;
+            inventoryHighlight.Show(false);
+            SetInventoryOpen(false);
+        }
+
+        private void HandleSortingAreaInput()
+        {
+            Vector2Int delta = Vector2Int.zero;
+            if (!Input.GetKey(KeyCode.Space))
+            {
+                if (Input.GetKeyDown(KeyCode.W)) delta = new Vector2Int(0, -1);
+                if (Input.GetKeyDown(KeyCode.S)) delta = new Vector2Int(0, 1);
+                if (Input.GetKeyDown(KeyCode.A)) delta = new Vector2Int(-1, 0);
+                if (Input.GetKeyDown(KeyCode.D)) delta = new Vector2Int(1, 0);
+                if (delta != Vector2Int.zero)
+                {
+                    Vector2Int next = selectionCursor + delta;
+                    next.x = Mathf.Clamp(next.x, 0, sortingGrid.gridSizeWidth - 1);
+                    next.y = Mathf.Clamp(next.y, 0, sortingGrid.gridSizeHeight - 1);
+                    selectionCursor = next;
+                    inventoryHighlight.SetTileSize();
+                    inventoryHighlight.SetPosition(sortingGrid, null, selectionCursor.x, selectionCursor.y);
+                }
+            }
+            else
+            {
+                if (heldItem == null)
+                {
+                    if (sortingGrid.HasItem(selectionCursor.x, selectionCursor.y))
+                    {
+                        heldItem = sortingGrid.GetTetrisItem(selectionCursor.x, selectionCursor.y);
+                        inventoryHighlight.SetSize(heldItem);
+                        inventoryHighlight.SetPosition(sortingGrid, heldItem, heldItem.onGridPositionX, heldItem.onGridPositionY);
+                    }
+                }
+                else
+                {
+                    if (Input.GetKeyDown(KeyCode.R))
+                    {
+                        // Rotate held item
+                        heldItem.Dir = ChosTIS.Utilities.RotationHelper.GetNextDir(heldItem.Dir);
+                        heldItem.Rotated = !heldItem.Rotated;
+                        heldItem.RotationOffset = ChosTIS.Utilities.RotationHelper.GetRotationOffset(heldItem.Dir, heldItem.WIDTH, heldItem.HEIGHT);
+                        heldItem.TetrisPieceShapePos = ChosTIS.Utilities.RotationHelper.RotatePoints(heldItem.TetrisPieceShapePos, heldItem.Dir);
+                        // Re-place to same origin to update size/rotation
+                        Vector2Int origin = new Vector2Int(heldItem.onGridPositionX, heldItem.onGridPositionY);
+                        sortingGrid.RemoveTetrisItem(heldItem, origin.x, origin.y, heldItem.RotationOffset, heldItem.TetrisPieceShapePos);
+                        sortingGrid.PlaceTetrisItem(heldItem, origin.x, origin.y);
+                        inventoryHighlight.SetSize(heldItem);
+                        inventoryHighlight.SetPosition(sortingGrid, heldItem, heldItem.onGridPositionX, heldItem.onGridPositionY);
+                    }
+                    Vector2Int move = Vector2Int.zero;
+                    if (Input.GetKeyDown(KeyCode.W)) move = new Vector2Int(0, -1);
+                    if (Input.GetKeyDown(KeyCode.S)) move = new Vector2Int(0, 1);
+                    if (Input.GetKeyDown(KeyCode.A)) move = new Vector2Int(-1, 0);
+                    if (Input.GetKeyDown(KeyCode.D)) move = new Vector2Int(1, 0);
+                    if (move != Vector2Int.zero)
+                    {
+                        int newX = Mathf.Clamp(heldItem.onGridPositionX + move.x, 0, sortingGrid.gridSizeWidth - 1);
+                        int newY = Mathf.Clamp(heldItem.onGridPositionY + move.y, 0, sortingGrid.gridSizeHeight - 1);
+                        // Remove and attempt place
+                        sortingGrid.RemoveTetrisItem(heldItem, heldItem.onGridPositionX, heldItem.onGridPositionY, heldItem.RotationOffset, heldItem.TetrisPieceShapePos);
+                        bool placed = sortingGrid.TryPlaceTetrisItem(heldItem, newX, newY);
+                        if (!placed)
+                        {
+                            sortingGrid.PlaceTetrisItem(heldItem, heldItem.onGridPositionX, heldItem.onGridPositionY);
+                        }
+                        inventoryHighlight.SetSize(heldItem);
+                        inventoryHighlight.SetPosition(sortingGrid, heldItem, heldItem.onGridPositionX, heldItem.onGridPositionY);
+                    }
+                }
+            }
+            // Release Space ends holding
+            if (Input.GetKeyUp(KeyCode.Space))
+            {
+                heldItem = null;
+                inventoryHighlight.SetTileSize();
+                inventoryHighlight.SetPosition(sortingGrid, null, selectionCursor.x, selectionCursor.y);
+            }
+        }
+
+        public void BeginOrganizeCurrentItemFromPickup(int itemID)
+        {
+            if (pendingOrganize) return;
+            selectedItemIndex = 0;
+            if (selectedTetrisItem)
+            {
+                Destroy(selectedTetrisItem.gameObject);
+                selectedTetrisItem = null;
+            }
+            // Create picked item in UI without placing
+            var stackable = CreateNewStackableItem(itemID);
+            currentPickupItem = selectedTetrisItem;
+            pendingOrganize = true;
+        }
+
+        public void EndOrganizeCurrentItem()
+        {
+            pendingOrganize = false;
+            currentPickupItem = null;
         }
 
         /// <summary>

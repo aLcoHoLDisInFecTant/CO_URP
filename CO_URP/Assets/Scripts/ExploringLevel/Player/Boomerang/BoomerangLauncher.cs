@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
 
+/*
 public class BoomerangLauncher : MonoBehaviour
 {
     [Header("Boomerang Settings")]
@@ -142,3 +143,4 @@ public class BoomerangLauncher : MonoBehaviour
         }
     }
 }
+*/

@@ -1,5 +1,5 @@
 using UnityEngine;
-
+/*
 public class SwingState : PlayerState_Explore
 {
     public SwingState(PlayerStateMachine_Explore sm) : base(sm) { }
@@ -8,7 +8,7 @@ public class SwingState : PlayerState_Explore
     {
         Rigidbody rb = stateMachine.player.Rb;
         Transform orientation = stateMachine.Transform;
-        float SwingForce = stateMachine.player.SwingForce;
+        // float SwingForce = stateMachine.player.SwingForce;
 
         if (stateMachine.inputQueue.Contains(ECommand.RIGHT))
             rb.AddForce(orientation.right * SwingForce * Time.deltaTime);
@@ -28,3 +28,4 @@ public class SwingState : PlayerState_Explore
         }
     }
 }
+*/

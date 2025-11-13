@@ -1,7 +1,9 @@
 ﻿using UnityEngine;
 
+/*
 public class GrappleAimState : PlayerState_Explore
 {
+    
     private bool isFiring = false;
     private Vector3 fireDirection;
     private Vector3 startPoint;
@@ -80,4 +82,6 @@ public class GrappleAimState : PlayerState_Explore
         stateMachine.player.child.gameObject.SetActive(false);
         stateMachine.player.Animator.SetBool("Aiming", false);
     }
+    
 }
+*/

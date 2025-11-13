@@ -54,7 +54,22 @@ public class BoomerangProjectile : MonoBehaviour
     /// </summary>
     public void InitializeForward(Vector3 start, Vector3 target, float launchSpd, float returnSpd, Action returnCallback)
     {
-        playerTransform = FindObjectOfType<Player_Explore>().transform;
+        playerTransform = FindObjectOfType<Player_Explore>()?.transform;
+        transform.position = start;
+
+        movementMode = BoomerangMovementMode.Forward;
+        targetPosition = target;
+        launchSpeed = launchSpd;
+        returnSpeed = returnSpd;
+        onReturnCallback = returnCallback;
+
+        isReturning = false;
+        hasReachedTarget = false;
+    }
+
+    public void InitializeForward(Transform player, Vector3 start, Vector3 target, float launchSpd, float returnSpd, Action returnCallback)
+    {
+        playerTransform = player;
         transform.position = start;
 
         movementMode = BoomerangMovementMode.Forward;
@@ -88,7 +103,7 @@ public class BoomerangProjectile : MonoBehaviour
         isReturning = false;
         totalAngleTraveled = 0f;
 
-        //Debug.Log($"³õÊ¼»¯Ô²È¦Í¶ÖÀ - playerTransform: {(playerTransform != null ? "´æÔÚ" : "null")}, ÆðÊ¼½Ç¶È: {currentAngle}, °ë¾¶: {circleRadius}");
+        //Debug.Log($"ï¿½ï¿½Ê¼ï¿½ï¿½Ô²È¦Í¶ï¿½ï¿½ - playerTransform: {(playerTransform != null ? "ï¿½ï¿½ï¿½ï¿½" : "null")}, ï¿½ï¿½Ê¼ï¿½Ç¶ï¿½: {currentAngle}, ï¿½ë¾¶: {circleRadius}");
     }
 
     void Update()
@@ -104,7 +119,7 @@ public class BoomerangProjectile : MonoBehaviour
         // State machine for movement
         if (isReturning)
         {
-            //Debug.Log("ÕýÔÚÖ´ÐÐ·µ»ØÂß¼­");
+            //Debug.Log("ï¿½ï¿½ï¿½ï¿½Ö´ï¿½Ð·ï¿½ï¿½ï¿½ï¿½ß¼ï¿½");
             ReturnToPlayer();
             return;
         }
@@ -118,7 +133,7 @@ public class BoomerangProjectile : MonoBehaviour
                 UpdateCircleMovement();
                 break;
             case BoomerangMovementMode.None:
-                //Debug.Log("movementMode Îª None£¬»ØÐýïÚÓ¦¸Ã¾²Ö¹");
+                //Debug.Log("movementMode Îª Noneï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½Ã¾ï¿½Ö¹");
                 break;
         }
     }
@@ -169,10 +184,10 @@ public class BoomerangProjectile : MonoBehaviour
         transform.position = newPosition;
 
         // After a full circle, automatically start returning
-        //Debug.Log($"»·ÈÆ½ø¶È: {totalAngleTraveled:F1}/{FULL_CIRCLE_DEGREES} ¶È");
+        //Debug.Log($"ï¿½ï¿½ï¿½Æ½ï¿½ï¿½ï¿½: {totalAngleTraveled:F1}/{FULL_CIRCLE_DEGREES} ï¿½ï¿½");
         if (totalAngleTraveled >= FULL_CIRCLE_DEGREES)
         {
-            //Debug.Log("»·ÈÆÍê³É£¬¿ªÊ¼·µ»Ø");
+            //Debug.Log("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É£ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½");
             StartReturn();
         }
     }
@@ -189,14 +204,14 @@ public class BoomerangProjectile : MonoBehaviour
         Vector3 oldPosition = transform.position;
         transform.position = Vector3.MoveTowards(transform.position, returnTarget, returnSpeed * Time.deltaTime);
 
-        // Ôö¼Óµ÷ÊÔÐÅÏ¢
+        // ï¿½ï¿½ï¿½Óµï¿½ï¿½ï¿½ï¿½ï¿½Ï¢
         float distanceToPlayer = Vector3.Distance(transform.position, returnTarget);
-        //Debug.Log($"»ØÐýïÚ·µ»ØÖÐ - ¾àÀëÍæ¼Ò: {distanceToPlayer:F2}, µ±Ç°Î»ÖÃ: {transform.position}, Ä¿±êÎ»ÖÃ: {returnTarget}");
+        //Debug.Log($"ï¿½ï¿½ï¿½ï¿½ï¿½Ú·ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½: {distanceToPlayer:F2}, ï¿½ï¿½Ç°Î»ï¿½ï¿½: {transform.position}, Ä¿ï¿½ï¿½Î»ï¿½ï¿½: {returnTarget}");
 
-        // Check for arrival - Ôö´ó¼ì²â·¶Î§²¢Ìí¼Ó¶àÖØ¼ì²âÌõ¼þ
+        // Check for arrival - ï¿½ï¿½ï¿½ï¿½ï¿½â·¶Î§ï¿½ï¿½ï¿½ï¿½ï¿½Ó¶ï¿½ï¿½Ø¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         if (distanceToPlayer < 1.0f || Vector3.Distance(oldPosition, transform.position) < 0.01f)
         {
-            //Debug.Log("Íê³É·µ»Ø - ´¥·¢Ìõ¼þ: " + (distanceToPlayer < 1.0f ? "¾àÀë´ï±ê" : "ÒÆ¶¯Í£Ö¹"));
+            //Debug.Log("ï¿½ï¿½É·ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½: " + (distanceToPlayer < 1.0f ? "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½" : "ï¿½Æ¶ï¿½Í£Ö¹"));
             ReturnComplete();
         }
     }
@@ -206,28 +221,28 @@ public class BoomerangProjectile : MonoBehaviour
     /// </summary>
     public void StartReturn()
     {
-        //Debug.Log($"StartReturn ±»µ÷ÓÃ - isReturning: {isReturning}, playerTransform: {(playerTransform != null ? "´æÔÚ" : "null")}");
+        //Debug.Log($"StartReturn ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ - isReturning: {isReturning}, playerTransform: {(playerTransform != null ? "ï¿½ï¿½ï¿½ï¿½" : "null")}");
 
         if (!isReturning)
         {
             isReturning = true;
-            movementMode = BoomerangMovementMode.None; // ×èÖ¹¼ÌÐøÖ´ÐÐ»·ÈÆÂß¼­
-            //Debug.Log("»ØÐýïÚ¿ªÊ¼·µ»ØÍæ¼Ò - ×´Ì¬ÒÑÉèÖÃ");
+            movementMode = BoomerangMovementMode.None; // ï¿½ï¿½Ö¹ï¿½ï¿½ï¿½ï¿½Ö´ï¿½Ð»ï¿½ï¿½ï¿½ï¿½ß¼ï¿½
+            //Debug.Log("ï¿½ï¿½ï¿½ï¿½ï¿½Ú¿ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ - ×´Ì¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
 
-            // Á¢¼´²âÊÔÒ»´Î·µ»ØÂß¼­
+            // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½Î·ï¿½ï¿½ï¿½ï¿½ß¼ï¿½
             if (playerTransform != null)
             {
                 Vector3 returnTarget = playerTransform.position + Vector3.up * 1.5f;
-                //Debug.Log($"·µ»ØÄ¿±êÎ»ÖÃ: {returnTarget}, µ±Ç°Î»ÖÃ: {transform.position}, ¾àÀë: {Vector3.Distance(transform.position, returnTarget)}");
+                //Debug.Log($"ï¿½ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½Î»ï¿½ï¿½: {returnTarget}, ï¿½ï¿½Ç°Î»ï¿½ï¿½: {transform.position}, ï¿½ï¿½ï¿½ï¿½: {Vector3.Distance(transform.position, returnTarget)}");
             }
             else
             {
-                //Debug.LogError("playerTransform Îª null£¡ÎÞ·¨·µ»Ø£¡");
+                //Debug.LogError("playerTransform Îª nullï¿½ï¿½ï¿½Þ·ï¿½ï¿½ï¿½ï¿½Ø£ï¿½");
             }
         }
         else
         {
-            //Debug.Log("StartReturn ±»µ÷ÓÃ£¬µ«ÒÑ¾­ÔÚ·µ»Ø×´Ì¬ÖÐ");
+            //Debug.Log("StartReturn ï¿½ï¿½ï¿½ï¿½ï¿½Ã£ï¿½ï¿½ï¿½ï¿½Ñ¾ï¿½ï¿½Ú·ï¿½ï¿½ï¿½×´Ì¬ï¿½ï¿½");
         }
     }
 

@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Linq;
 using System.Collections.Generic;
 
+/*
 /// <summary>
 /// 玩家的回旋镖蓄力与发射状态。
 /// 在此状态下，玩家保持原地，可以根据后续输入决定回旋镖的投掷方式。
@@ -135,3 +136,4 @@ public class BoomerangChargeState : PlayerState_Explore
         stateMachine.player.inputQueue = new Queue<ECommand>(list);
     }
 }
+*/

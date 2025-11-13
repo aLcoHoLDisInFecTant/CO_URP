@@ -3,20 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-// ÔöÇ¿°æÂ·ÈË¿ØÖÆÆ÷ - ÏêÏ¸µÄÑ°Â·ÏµÍ³ÊµÏÖ
+// ï¿½ï¿½Ç¿ï¿½ï¿½Â·ï¿½Ë¿ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½Ï¸ï¿½ï¿½Ñ°Â·ÏµÍ³Êµï¿½ï¿½
 public class EnhancedNPCController : MonoBehaviour
 {
-    [Header("Ñ°Â·ÅäÖÃ")]
-    public float pathfindingUpdateRate = 0.2f;    // Â·¾¶¸üÐÂÆµÂÊ
-    public float stuckDetectionTime = 3f;         // ¿¨×¡¼ì²âÊ±¼ä
-    public float minMoveDistance = 0.1f;          // ×îÐ¡ÒÆ¶¯¾àÀë
-    public float obstacleAvoidanceRadius = 1f;    // ÕÏ°­Îï±ÜÈÃ°ë¾¶
-    public float dynamicObstacleDetectionRange = 5f; // ¶¯Ì¬ÕÏ°­Îï¼ì²â·¶Î§
+    [Header("Ñ°Â·ï¿½ï¿½ï¿½ï¿½")]
+    public float pathfindingUpdateRate = 0.2f;    // Â·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æµï¿½ï¿½
+    public float stuckDetectionTime = 3f;         // ï¿½ï¿½×¡ï¿½ï¿½ï¿½Ê±ï¿½ï¿½
+    public float minMoveDistance = 0.1f;          // ï¿½ï¿½Ð¡ï¿½Æ¶ï¿½ï¿½ï¿½ï¿½ï¿½
+    public float obstacleAvoidanceRadius = 1f;    // ï¿½Ï°ï¿½ï¿½ï¿½ï¿½ï¿½Ã°ë¾¶
+    public float dynamicObstacleDetectionRange = 5f; // ï¿½ï¿½Ì¬ï¿½Ï°ï¿½ï¿½ï¿½ï¿½â·¶Î§
 
-    [Header("Â·¾¶ÓÅ»¯")]
-    public bool usePathSmoothing = true;          // ÊÇ·ñÊ¹ÓÃÂ·¾¶Æ½»¬
-    public int pathSmoothingIterations = 3;       // Â·¾¶Æ½»¬µü´ú´ÎÊý
-    public float cornerSlowdownDistance = 2f;     // ×ªÍä¼õËÙ¾àÀë
+    [Header("Â·ï¿½ï¿½ï¿½Å»ï¿½")]
+    public bool usePathSmoothing = true;          // ï¿½Ç·ï¿½Ê¹ï¿½ï¿½Â·ï¿½ï¿½Æ½ï¿½ï¿½
+    public int pathSmoothingIterations = 3;       // Â·ï¿½ï¿½Æ½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    public float cornerSlowdownDistance = 2f;     // ×ªï¿½ï¿½ï¿½ï¿½Ù¾ï¿½ï¿½ï¿½
 
     private NavMeshAgent agent;
     private Vector3 lastPosition;
@@ -24,7 +24,7 @@ public class EnhancedNPCController : MonoBehaviour
     private Queue<Vector3> pathHistory = new Queue<Vector3>();
     private bool isRecalculatingPath = false;
 
-    // ¶¯Ì¬ÕÏ°­Îï¼ì²â
+    // ï¿½ï¿½Ì¬ï¿½Ï°ï¿½ï¿½ï¿½ï¿½ï¿½
     private List<Collider> nearbyObstacles = new List<Collider>();
     private Coroutine pathfindingCoroutine;
 
@@ -33,7 +33,7 @@ public class EnhancedNPCController : MonoBehaviour
         InitializeNavMeshAgent();
         lastPosition = transform.position;
 
-        // Æô¶¯Â·¾¶¼ì²âÐ­³Ì
+        // ï¿½ï¿½ï¿½ï¿½Â·ï¿½ï¿½ï¿½ï¿½ï¿½Ð­ï¿½ï¿½
         pathfindingCoroutine = StartCoroutine(PathfindingUpdateLoop());
     }
 
@@ -45,49 +45,49 @@ public class EnhancedNPCController : MonoBehaviour
             agent = gameObject.AddComponent<NavMeshAgent>();
         }
 
-        // NavMeshAgentÏêÏ¸ÅäÖÃ
-        agent.baseOffset = 0f;                    // »ù´¡Æ«ÒÆ
-        agent.speed = 1.5f;                       // ÒÆ¶¯ËÙ¶È
-        agent.angularSpeed = 120f;                // ×ªÏòËÙ¶È
-        agent.acceleration = 8f;                  // ¼ÓËÙ¶È
-        agent.stoppingDistance = 0.5f;            // Í£Ö¹¾àÀë
-        agent.autoBraking = true;                 // ×Ô¶¯É²³µ
+        // NavMeshAgentï¿½ï¿½Ï¸ï¿½ï¿½ï¿½ï¿½
+        agent.baseOffset = 0f;                    // ï¿½ï¿½ï¿½ï¿½Æ«ï¿½ï¿½
+        agent.speed = 1.5f;                       // ï¿½Æ¶ï¿½ï¿½Ù¶ï¿½
+        agent.angularSpeed = 120f;                // ×ªï¿½ï¿½ï¿½Ù¶ï¿½
+        agent.acceleration = 8f;                  // ï¿½ï¿½ï¿½Ù¶ï¿½
+        agent.stoppingDistance = 0.5f;            // Í£Ö¹ï¿½ï¿½ï¿½ï¿½
+        agent.autoBraking = true;                 // ï¿½Ô¶ï¿½É²ï¿½ï¿½
 
-        // ±ÜÈÃÅäÖÃ
-        agent.avoidancePriority = Random.Range(10, 90); // ±ÜÈÃÓÅÏÈ¼¶£¨Ëæ»ú£©
-        agent.radius = 0.4f;                      // Åö×²°ë¾¶
-        agent.height = 1.8f;                      // ¸ß¶È
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+        agent.avoidancePriority = Random.Range(10, 90); // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+        agent.radius = 0.4f;                      // ï¿½ï¿½×²ï¿½ë¾¶
+        agent.height = 1.8f;                      // ï¿½ß¶ï¿½
 
-        // Â·¾¶ÖÊÁ¿ÉèÖÃ
+        // Â·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         agent.obstacleAvoidanceType = ObstacleAvoidanceType.HighQualityObstacleAvoidance;
-        agent.areaMask = NavMesh.AllAreas;        // ÔÊÐíÍ¨¹ýµÄÇøÓò
+        agent.areaMask = NavMesh.AllAreas;        // ï¿½ï¿½ï¿½ï¿½Í¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     }
 
-    // Ö÷ÒªÑ°Â·¸üÐÂÑ­»·
+    // ï¿½ï¿½ÒªÑ°Â·ï¿½ï¿½ï¿½ï¿½Ñ­ï¿½ï¿½
     IEnumerator PathfindingUpdateLoop()
     {
         while (true)
         {
             yield return new WaitForSeconds(pathfindingUpdateRate);
 
-            // ¼ì²âÊÇ·ñ¿¨×¡
+            // ï¿½ï¿½ï¿½ï¿½Ç·ï¿½×¡
             DetectStuckState();
 
-            // ¼ì²â¶¯Ì¬ÕÏ°­Îï
+            // ï¿½ï¿½â¶¯Ì¬ï¿½Ï°ï¿½ï¿½ï¿½
             DetectDynamicObstacles();
 
-            // Â·¾¶ÓÅ»¯
+            // Â·ï¿½ï¿½ï¿½Å»ï¿½
             if (usePathSmoothing && agent.hasPath)
             {
                 SmoothPath();
             }
 
-            // ´¦Àí×ªÍä¼õËÙ
+            // ï¿½ï¿½ï¿½ï¿½×ªï¿½ï¿½ï¿½ï¿½ï¿½
             HandleCornerSlowdown();
         }
     }
 
-    // ¿¨×¡×´Ì¬¼ì²â
+    // ï¿½ï¿½×¡×´Ì¬ï¿½ï¿½ï¿½
     void DetectStuckState()
     {
         float moveDistance = Vector3.Distance(transform.position, lastPosition);
@@ -100,24 +100,24 @@ public class EnhancedNPCController : MonoBehaviour
 
                 if (stuckTimer >= stuckDetectionTime)
                 {
-                    Debug.Log($"{gameObject.name} ¼ì²âµ½¿¨×¡×´Ì¬£¬ÖØÐÂ¼ÆËãÂ·¾¶");
+                    Debug.Log($"{gameObject.name} ï¿½ï¿½âµ½ï¿½ï¿½×¡×´Ì¬ï¿½ï¿½ï¿½ï¿½ï¿½Â¼ï¿½ï¿½ï¿½Â·ï¿½ï¿½");
                     HandleStuckState();
                     stuckTimer = 0f;
                 }
             }
             else
             {
-                stuckTimer = 0f; // ÖØÖÃ¿¨×¡¼ÆÊ±Æ÷
+                stuckTimer = 0f; // ï¿½ï¿½ï¿½Ã¿ï¿½×¡ï¿½ï¿½Ê±ï¿½ï¿½
             }
         }
 
         lastPosition = transform.position;
     }
 
-    // ´¦Àí¿¨×¡×´Ì¬
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×¡×´Ì¬
     void HandleStuckState()
     {
-        // ·½·¨1: ³¢ÊÔÖØÐÂ¼ÆËãµ½Í¬Ò»Ä¿±êµÄÂ·¾¶
+        // ï¿½ï¿½ï¿½ï¿½1: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â¼ï¿½ï¿½ãµ½Í¬Ò»Ä¿ï¿½ï¿½ï¿½Â·ï¿½ï¿½
         if (agent.destination != Vector3.zero)
         {
             Vector3 originalDestination = agent.destination;
@@ -127,12 +127,12 @@ public class EnhancedNPCController : MonoBehaviour
         }
     }
 
-    // ´øÆ«ÒÆµÄÂ·¾¶ÖØ¼ÆËã
+    // ï¿½ï¿½Æ«ï¿½Æµï¿½Â·ï¿½ï¿½ï¿½Ø¼ï¿½ï¿½ï¿½
     IEnumerator RecalculatePathWithOffset(Vector3 originalDestination)
     {
         isRecalculatingPath = true;
 
-        // ³¢ÊÔ¶à¸öÆ«ÒÆÎ»ÖÃ
+        // ï¿½ï¿½ï¿½Ô¶ï¿½ï¿½Æ«ï¿½ï¿½Î»ï¿½ï¿½
         Vector3[] offsets = {
             Vector3.zero,
             Vector3.right * 0.5f,
@@ -146,7 +146,7 @@ public class EnhancedNPCController : MonoBehaviour
             Vector3 targetPos = originalDestination + offset;
             NavMeshHit hit;
 
-            // ÔÚNavMeshÉÏ²ÉÑùÓÐÐ§Î»ÖÃ
+            // ï¿½ï¿½NavMeshï¿½Ï²ï¿½ï¿½ï¿½ï¿½ï¿½Ð§Î»ï¿½ï¿½
             if (NavMesh.SamplePosition(targetPos, out hit, 2f, NavMesh.AllAreas))
             {
                 NavMeshPath path = new NavMeshPath();
@@ -155,7 +155,7 @@ public class EnhancedNPCController : MonoBehaviour
                     if (path.status == NavMeshPathStatus.PathComplete)
                     {
                         agent.SetPath(path);
-                        Debug.Log($"³É¹¦ÖØ¼ÆËãÂ·¾¶£¬Ê¹ÓÃÆ«ÒÆ: {offset}");
+                        Debug.Log($"ï¿½É¹ï¿½ï¿½Ø¼ï¿½ï¿½ï¿½Â·ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½ï¿½Æ«ï¿½ï¿½: {offset}");
                         break;
                     }
                 }
@@ -167,12 +167,12 @@ public class EnhancedNPCController : MonoBehaviour
         isRecalculatingPath = false;
     }
 
-    // ¶¯Ì¬ÕÏ°­Îï¼ì²â
+    // ï¿½ï¿½Ì¬ï¿½Ï°ï¿½ï¿½ï¿½ï¿½ï¿½
     void DetectDynamicObstacles()
     {
         nearbyObstacles.Clear();
 
-        // ¼ì²â¸½½üµÄÅö×²Ìå£¨ÆäËûNPC¡¢¹ºÎï³µµÈ£©
+        // ï¿½ï¿½â¸½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×²ï¿½å£¨ï¿½ï¿½ï¿½ï¿½NPCï¿½ï¿½ï¿½ï¿½ï¿½ï³µï¿½È£ï¿½
         Collider[] colliders = Physics.OverlapSphere(
             transform.position,
             dynamicObstacleDetectionRange,
@@ -181,20 +181,20 @@ public class EnhancedNPCController : MonoBehaviour
 
         foreach (Collider col in colliders)
         {
-            if (col.gameObject != gameObject) // ÅÅ³ý×Ô¼º
+            if (col.gameObject != gameObject) // ï¿½Å³ï¿½ï¿½Ô¼ï¿½
             {
                 nearbyObstacles.Add(col);
             }
         }
 
-        // Èç¹ûÇ°·½ÓÐÕÏ°­Îï£¬µ÷ÕûÂ·¾¶
+        // ï¿½ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ï¿½ï£¬ï¿½ï¿½ï¿½ï¿½Â·ï¿½ï¿½
         if (nearbyObstacles.Count > 0 && !isRecalculatingPath)
         {
             HandleDynamicObstacles();
         }
     }
 
-    // ´¦Àí¶¯Ì¬ÕÏ°­Îï
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì¬ï¿½Ï°ï¿½ï¿½ï¿½
     void HandleDynamicObstacles()
     {
         Vector3 avoidanceForce = Vector3.zero;
@@ -206,21 +206,21 @@ public class EnhancedNPCController : MonoBehaviour
 
             if (distance < obstacleAvoidanceRadius && distance > 0)
             {
-                // ¼ÆËã±ÜÈÃÁ¦
+                // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
                 Vector3 avoidanceDirection = -directionToObstacle.normalized;
                 float avoidanceStrength = (obstacleAvoidanceRadius - distance) / obstacleAvoidanceRadius;
                 avoidanceForce += avoidanceDirection * avoidanceStrength;
             }
         }
 
-        // Ó¦ÓÃ±ÜÈÃÁ¦
+        // Ó¦ï¿½Ã±ï¿½ï¿½ï¿½ï¿½ï¿½
         if (avoidanceForce.magnitude > 0.1f)
         {
             ApplyAvoidanceForce(avoidanceForce);
         }
     }
 
-    // Ó¦ÓÃ±ÜÈÃÁ¦
+    // Ó¦ï¿½Ã±ï¿½ï¿½ï¿½ï¿½ï¿½
     void ApplyAvoidanceForce(Vector3 avoidanceForce)
     {
         Vector3 newDirection = (transform.forward + avoidanceForce.normalized * 0.5f).normalized;
@@ -229,16 +229,16 @@ public class EnhancedNPCController : MonoBehaviour
         NavMeshHit hit;
         if (NavMesh.SamplePosition(newTarget, out hit, 2f, NavMesh.AllAreas))
         {
-            // ÁÙÊ±ÉèÖÃÐÂµÄÖÐ¼äÄ¿±êµã
+            // ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½Âµï¿½ï¿½Ð¼ï¿½Ä¿ï¿½ï¿½ï¿½
             Vector3 originalDestination = agent.destination;
             agent.SetDestination(hit.position);
 
-            // ÑÓ³Ù»Ö¸´Ô­Â·¾¶
+            // ï¿½Ó³Ù»Ö¸ï¿½Ô­Â·ï¿½ï¿½
             StartCoroutine(RestoreOriginalPath(originalDestination, 1f));
         }
     }
 
-    // »Ö¸´Ô­Ê¼Â·¾¶
+    // ï¿½Ö¸ï¿½Ô­Ê¼Â·ï¿½ï¿½
     IEnumerator RestoreOriginalPath(Vector3 originalDestination, float delay)
     {
         yield return new WaitForSeconds(delay);
@@ -249,7 +249,7 @@ public class EnhancedNPCController : MonoBehaviour
         }
     }
 
-    // Â·¾¶Æ½»¬´¦Àí
+    // Â·ï¿½ï¿½Æ½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     void SmoothPath()
     {
         if (!agent.hasPath || agent.path.corners.Length < 3) return;
@@ -257,24 +257,24 @@ public class EnhancedNPCController : MonoBehaviour
         NavMeshPath smoothedPath = new NavMeshPath();
         List<Vector3> smoothedCorners = new List<Vector3>();
 
-        // Ìí¼ÓÆðÊ¼µã
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½
         smoothedCorners.Add(agent.path.corners[0]);
 
-        // ¶ÔÖÐ¼äµã½øÐÐÆ½»¬´¦Àí
+        // ï¿½ï¿½ï¿½Ð¼ï¿½ï¿½ï¿½ï¿½ï¿½Æ½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         for (int i = 1; i < agent.path.corners.Length - 1; i++)
         {
             Vector3 prevCorner = agent.path.corners[i - 1];
             Vector3 currentCorner = agent.path.corners[i];
             Vector3 nextCorner = agent.path.corners[i + 1];
 
-            // Ê¹ÓÃÏßÐÔ²åÖµ½øÐÐÆ½»¬
+            // Ê¹ï¿½ï¿½ï¿½ï¿½ï¿½Ô²ï¿½Öµï¿½ï¿½ï¿½ï¿½Æ½ï¿½ï¿½
             Vector3 smoothedCorner = Vector3.Lerp(
                 Vector3.Lerp(prevCorner, currentCorner, 0.5f),
                 Vector3.Lerp(currentCorner, nextCorner, 0.5f),
                 0.5f
             );
 
-            // È·±£Æ½»¬ºóµÄµãÔÚNavMeshÉÏ
+            // È·ï¿½ï¿½Æ½ï¿½ï¿½ï¿½ï¿½Äµï¿½ï¿½ï¿½NavMeshï¿½ï¿½
             NavMeshHit hit;
             if (NavMesh.SamplePosition(smoothedCorner, out hit, 1f, NavMesh.AllAreas))
             {
@@ -282,62 +282,62 @@ public class EnhancedNPCController : MonoBehaviour
             }
             else
             {
-                smoothedCorners.Add(currentCorner); // Èç¹û²»ÔÚNavMeshÉÏ£¬Ê¹ÓÃÔ­Ê¼µã
+                smoothedCorners.Add(currentCorner); // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½NavMeshï¿½Ï£ï¿½Ê¹ï¿½ï¿½Ô­Ê¼ï¿½ï¿½
             }
         }
 
-        // Ìí¼ÓÖÕµã
+        // ï¿½ï¿½ï¿½ï¿½ï¿½Õµï¿½
         smoothedCorners.Add(agent.path.corners[agent.path.corners.Length - 1]);
 
-        // ´´½¨ÐÂµÄÆ½»¬Â·¾¶
+        // ï¿½ï¿½ï¿½ï¿½ï¿½Âµï¿½Æ½ï¿½ï¿½Â·ï¿½ï¿½
         if (NavMesh.CalculatePath(transform.position, smoothedCorners[smoothedCorners.Count - 1], NavMesh.AllAreas, smoothedPath))
         {
             agent.SetPath(smoothedPath);
         }
     }
 
-    // ×ªÍä¼õËÙ´¦Àí
+    // ×ªï¿½ï¿½ï¿½ï¿½Ù´ï¿½ï¿½ï¿½
     void HandleCornerSlowdown()
     {
         if (!agent.hasPath || agent.path.corners.Length < 2) return;
 
-        // ÕÒµ½ÏÂÒ»¸ö×ªÍäµã
+        // ï¿½Òµï¿½ï¿½ï¿½Ò»ï¿½ï¿½×ªï¿½ï¿½ï¿½
         Vector3 nextCorner = agent.path.corners[1];
         float distanceToCorner = Vector3.Distance(transform.position, nextCorner);
 
         if (distanceToCorner <= cornerSlowdownDistance)
         {
-            // ¼ÆËã×ªÍä½Ç¶È
+            // ï¿½ï¿½ï¿½ï¿½×ªï¿½ï¿½Ç¶ï¿½
             Vector3 directionToCorner = (nextCorner - transform.position).normalized;
             Vector3 currentDirection = transform.forward;
             float angle = Vector3.Angle(currentDirection, directionToCorner);
 
-            // ¸ù¾Ý½Ç¶Èµ÷ÕûËÙ¶È
+            // ï¿½ï¿½ï¿½Ý½Ç¶Èµï¿½ï¿½ï¿½ï¿½Ù¶ï¿½
             float speedMultiplier = Mathf.Lerp(0.3f, 1f, 1f - (angle / 180f));
             agent.speed = agent.speed * speedMultiplier;
         }
     }
 
-    // ¸ß¼¶Ñ°Â··½·¨ - ´øÂ·¾¶ÑéÖ¤
+    // ï¿½ß¼ï¿½Ñ°Â·ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½Â·ï¿½ï¿½ï¿½ï¿½Ö¤
     public bool MoveToWithValidation(Vector3 destination)
     {
-        // Ê×ÏÈÑéÖ¤Ä¿±êÎ»ÖÃÊÇ·ñÓÐÐ§
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¤Ä¿ï¿½ï¿½Î»ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½Ð§
         NavMeshHit hit;
         if (!NavMesh.SamplePosition(destination, out hit, 5f, NavMesh.AllAreas))
         {
-            Debug.LogWarning($"Ä¿±êÎ»ÖÃ {destination} ²»ÔÚNavMeshÉÏ");
+            Debug.LogWarning($"Ä¿ï¿½ï¿½Î»ï¿½ï¿½ {destination} ï¿½ï¿½ï¿½ï¿½NavMeshï¿½ï¿½");
             return false;
         }
 
-        // ¼ÆËãÂ·¾¶
+        // ï¿½ï¿½ï¿½ï¿½Â·ï¿½ï¿½
         NavMeshPath path = new NavMeshPath();
         if (!NavMesh.CalculatePath(transform.position, hit.position, NavMesh.AllAreas, path))
         {
-            Debug.LogWarning("ÎÞ·¨¼ÆËãµ½Ä¿±êÎ»ÖÃµÄÂ·¾¶");
+            Debug.LogWarning("ï¿½Þ·ï¿½ï¿½ï¿½ï¿½ãµ½Ä¿ï¿½ï¿½Î»ï¿½Ãµï¿½Â·ï¿½ï¿½");
             return false;
         }
 
-        // ¼ì²éÂ·¾¶×´Ì¬
+        // ï¿½ï¿½ï¿½Â·ï¿½ï¿½×´Ì¬
         switch (path.status)
         {
             case NavMeshPathStatus.PathComplete:
@@ -346,12 +346,12 @@ public class EnhancedNPCController : MonoBehaviour
                 return true;
 
             case NavMeshPathStatus.PathPartial:
-                Debug.LogWarning("Ö»ÄÜÕÒµ½²¿·ÖÂ·¾¶");
-                agent.SetPath(path); // ÈÔÈ»¿ÉÒÔ³¢ÊÔ×ß²¿·ÖÂ·¾¶
+                Debug.LogWarning("Ö»ï¿½ï¿½ï¿½Òµï¿½ï¿½ï¿½ï¿½ï¿½Â·ï¿½ï¿½");
+                agent.SetPath(path); // ï¿½ï¿½È»ï¿½ï¿½ï¿½Ô³ï¿½ï¿½ï¿½ï¿½ß²ï¿½ï¿½ï¿½Â·ï¿½ï¿½
                 return true;
 
             case NavMeshPathStatus.PathInvalid:
-                Debug.LogError("Â·¾¶ÎÞÐ§");
+                Debug.LogError("Â·ï¿½ï¿½ï¿½ï¿½Ð§");
                 return false;
 
             default:
@@ -359,7 +359,7 @@ public class EnhancedNPCController : MonoBehaviour
         }
     }
 
-    // Â·¾¶ÐÅÏ¢ÈÕÖ¾
+    // Â·ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½Ö¾
     void LogPathInfo(NavMeshPath path)
     {
         float pathLength = 0f;
@@ -368,17 +368,17 @@ public class EnhancedNPCController : MonoBehaviour
             pathLength += Vector3.Distance(path.corners[i - 1], path.corners[i]);
         }
 
-        Debug.Log($"Â·¾¶¼ÆËã³É¹¦: ³¤¶È={pathLength:F2}m, ×ªÍäµãÊý={path.corners.Length}");
+        Debug.Log($"Â·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É¹ï¿½: ï¿½ï¿½ï¿½ï¿½={pathLength:F2}m, ×ªï¿½ï¿½ï¿½ï¿½ï¿½={path.corners.Length}");
     }
 
-    // ÇøÓò¼ì²é·½·¨
+    // ï¿½ï¿½ï¿½ï¿½ï¿½é·½ï¿½ï¿½
     public bool IsPositionWalkable(Vector3 position, float radius = 1f)
     {
         NavMeshHit hit;
         return NavMesh.SamplePosition(position, out hit, radius, NavMesh.AllAreas);
     }
 
-    // »ñÈ¡×î½üµÄ¿ÉÐÐ×ßÎ»ÖÃ
+    // ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½
     public Vector3 GetNearestWalkablePosition(Vector3 position, float searchRadius = 10f)
     {
         NavMeshHit hit;
@@ -386,10 +386,10 @@ public class EnhancedNPCController : MonoBehaviour
         {
             return hit.position;
         }
-        return transform.position; // Èç¹ûÕÒ²»µ½£¬·µ»Øµ±Ç°Î»ÖÃ
+        return transform.position; // ï¿½ï¿½ï¿½ï¿½Ò²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Øµï¿½Ç°Î»ï¿½ï¿½
     }
 
-    // Â·¾¶³¤¶È¼ÆËã
+    // Â·ï¿½ï¿½ï¿½ï¿½ï¿½È¼ï¿½ï¿½ï¿½
     public float GetPathLength()
     {
         if (!agent.hasPath) return 0f;
@@ -425,18 +425,18 @@ public class EnhancedNPCController : MonoBehaviour
         StopNavigation();
     }
 
-    // Debug¿ÉÊÓ»¯
+    // Debugï¿½ï¿½ï¿½Ó»ï¿½
     void OnDrawGizmosSelected()
     {
-        // »æÖÆ¼ì²â·¶Î§
+        // ï¿½ï¿½ï¿½Æ¼ï¿½â·¶Î§
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, dynamicObstacleDetectionRange);
 
-        // »æÖÆ±ÜÈÃ°ë¾¶
+        // ï¿½ï¿½ï¿½Æ±ï¿½ï¿½Ã°ë¾¶
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, obstacleAvoidanceRadius);
 
-        // »æÖÆÂ·¾¶
+        // ï¿½ï¿½ï¿½ï¿½Â·ï¿½ï¿½
         if (agent != null && agent.hasPath)
         {
             Gizmos.color = Color.blue;
@@ -447,7 +447,7 @@ public class EnhancedNPCController : MonoBehaviour
             }
         }
 
-        // »æÖÆ¼ì²âµ½µÄÕÏ°­Îï
+        // ï¿½ï¿½ï¿½Æ¼ï¿½âµ½ï¿½ï¿½ï¿½Ï°ï¿½ï¿½ï¿½
         Gizmos.color = Color.magenta;
         foreach (Collider obstacle in nearbyObstacles)
         {
@@ -459,16 +459,16 @@ public class EnhancedNPCController : MonoBehaviour
     }
 }
 
-// NavMeshºæ±ººÍÅäÖÃ¹ÜÀíÆ÷
+// NavMeshï¿½æ±ºï¿½ï¿½ï¿½ï¿½ï¿½Ã¹ï¿½ï¿½ï¿½ï¿½ï¿½
 public class NavMeshBakeManager : MonoBehaviour
 {
-    [Header("NavMeshºæ±ºÉèÖÃ")]
+    [Header("NavMeshï¿½æ±ºï¿½ï¿½ï¿½ï¿½")]
     public float agentRadius = 0.4f;
     public float agentHeight = 1.8f;
     public float maxSlope = 45f;
     public float stepHeight = 0.4f;
 
-    [Header("ÇøÓòÉèÖÃ")]
+    [Header("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½")]
     public string[] walkableAreas = { "Walkable", "ShoppingArea" };
     public string[] nonWalkableAreas = { "Obstacle", "Staff Only" };
 
@@ -481,14 +481,14 @@ public class NavMeshBakeManager : MonoBehaviour
     {
         NavMeshBuildSettings buildSettings = NavMesh.GetSettingsByID(0);
 
-        Debug.Log($"µ±Ç°NavMeshÉèÖÃ:");
-        Debug.Log($"- ´úÀí°ë¾¶: {buildSettings.agentRadius}");
-        Debug.Log($"- ´úÀí¸ß¶È: {buildSettings.agentHeight}");
-        Debug.Log($"- ×î´óÆÂ¶È: {buildSettings.agentSlope}");
-        Debug.Log($"- Ì¨½×¸ß¶È: {buildSettings.agentClimb}");
+        Debug.Log($"ï¿½ï¿½Ç°NavMeshï¿½ï¿½ï¿½ï¿½:");
+        Debug.Log($"- ï¿½ï¿½ï¿½ï¿½ï¿½ë¾¶: {buildSettings.agentRadius}");
+        Debug.Log($"- ï¿½ï¿½ï¿½ï¿½ï¿½ß¶ï¿½: {buildSettings.agentHeight}");
+        Debug.Log($"- ï¿½ï¿½ï¿½ï¿½Â¶ï¿½: {buildSettings.agentSlope}");
+        Debug.Log($"- Ì¨ï¿½×¸ß¶ï¿½: {buildSettings.agentClimb}");
     }
 
-    // ÔËÐÐÊ±¶¯Ì¬Ìí¼ÓÕÏ°­Îï
+    // ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½Ì¬ï¿½ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ï¿½ï¿½
     public void AddDynamicObstacle(GameObject obstacle)
     {
         NavMeshObstacle navObstacle = obstacle.GetComponent<NavMeshObstacle>();
@@ -497,7 +497,7 @@ public class NavMeshBakeManager : MonoBehaviour
             navObstacle = obstacle.AddComponent<NavMeshObstacle>();
         }
 
-        navObstacle.carving = true; // ÆôÓÃµñ¿Ì¹¦ÄÜ
+        navObstacle.carving = true; // ï¿½ï¿½ï¿½Ãµï¿½Ì¹ï¿½ï¿½ï¿½
         navObstacle.carvingMoveThreshold = 0.1f;
         navObstacle.carvingTimeToStationary = 0.5f;
     }
